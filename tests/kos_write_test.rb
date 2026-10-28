@@ -24,7 +24,7 @@ Dir.mktmpdir("kos-write-test-") do |tmp|
   FileUtils.cp(File.join(SRC, "tools/kos_write.rb"), File.join(kos, "tools/kos_write.rb"))
   g = ->(*a) { Open3.capture2e("git", "-C", kos, "-c", "user.name=t", "-c", "user.email=t@t", *a) }
   g.("add", "tools/kos_write.rb"); g.("commit", "-qm", "kos_write")
-  env = { "KOS_ROOT" => kos }
+  env = { "KOS_ROOT" => kos, "KOS_AGENTE" => nil } # sin agente heredado de la terminal
   w = ->(agente, *a) { Open3.capture2e(env.merge("KOS_AGENTE" => agente), "ruby", File.join(kos, "tools/kos_write.rb"), *a) }
   # Proyecto de prueba: el primero con archivo de tareas y sección Backlog. Sirve para el KOS propio y la plantilla.
   en = File.read(File.join(kos, "kos.yaml"))[/^lang:\s*(\w+)/, 1] == "en" rescue false

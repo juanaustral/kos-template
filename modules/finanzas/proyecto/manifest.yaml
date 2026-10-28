@@ -1,0 +1,15 @@
+schema_version: 1
+project_id: finanzas
+name: Finanzas
+lifecycle: active
+priority: 3
+owner: "{{OWNER_NAME}}"
+context:
+  areas: [finanzas]
+skills: {enabled: [], planned: []}
+tools:
+  read: [projects/finanzas]
+  write: [projects/finanzas]
+memory: {scope: "project:finanzas", cross_project: deny}
+security: {max_autonomy: A2, sensitivity: confidential, external_access: deny}
+definition_of_done: [datos-recuperables, sin-duplicados, privacidad-validada]

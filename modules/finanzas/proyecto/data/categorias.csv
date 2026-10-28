@@ -1,0 +1,9 @@
+id,nombre,tipo
+vivienda,Vivienda (alquiler o cuota),fijo
+servicios,Servicios (luz gas agua internet),fijo
+comida,Supermercado y comida,variable
+transporte,Transporte,variable
+salud,Salud,variable
+suscripciones,Suscripciones y software,fijo
+ocio,Salidas y ocio,variable
+otros,Otros,variable

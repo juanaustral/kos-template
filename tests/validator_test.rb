@@ -1,0 +1,129 @@
+#!/usr/bin/env ruby
+# encoding: utf-8
+Encoding.default_external = Encoding::UTF_8
+
+# Pruebas de las herramientas de KOS. Trabajan sobre copias temporales; no tocan tu KOS.
+# Uso: ruby tests/validator_test.rb [RAIZ]
+
+require "tmpdir"
+require "fileutils"
+require "open3"
+require "pathname"
+
+ROOT = Pathname.new(ARGV[0] || File.join(__dir__, "..")).expand_path
+$failures = []
+
+def run(*cmd) = Open3.capture2e(*cmd)
+def check(cond, message) = ($failures << message unless cond)
+
+def with_copy(name)
+  Dir.mktmpdir("kos-test-#{name}-") do |tmp|
+    copy = Pathname.new(tmp).join("kos")
+    FileUtils.mkdir_p(copy)
+    Dir.children(ROOT).reject { |c| %w[.git backups].include?(c) }.each { |c| FileUtils.cp_r(ROOT.join(c), copy) }
+    yield copy
+  end
+end
+
+def validate(copy) = run("ruby", copy.join("tools/kos_validate.rb").to_s, copy.to_s)
+
+def init(copy, *args)
+  run("ruby", copy.join("tools/kos_init.rb").to_s, "--si", "--nombre", "Persona Prueba", *args, stdin_data: "")
+end
+
+# 1. La plantilla vacía valida.
+with_copy("vacia") do |copy|
+  out, st = validate(copy)
+  check(st.success?, "la plantilla vacía no valida:\n#{out}")
+end
+
+# 2. Errores clásicos detectados.
+with_copy("mutada") do |copy|
+  copy.join("projects/mi-primer-proyecto/fuga.md").write("api_key: abcdefghijklmnopqrstuvwxyz123456\n[roto](no-existe.md)\n")
+  manifest = copy.join("projects/mi-primer-proyecto/manifest.yaml")
+  manifest.write(manifest.read.sub("write: [projects/mi-primer-proyecto]", "write: [knowledge]"))
+  out, st = validate(copy)
+  check(!st.success?, "no falló con datos inválidos")
+  %w[possible-secret-generic-secret link-broken write-scope-broad].each { |c| check(out.include?(c), "no detectó #{c}") }
+end
+
+# 3. YAML roto, archivo crítico vacío, estado incongruente.
+with_copy("yaml") do |copy|
+  copy.join("registry/projects.yaml").write("projects: [sin cerrar\n")
+  out, _ = validate(copy)
+  check(out.include?("yaml-invalid") || out.include?("registry-missing"), "YAML roto aceptado")
+end
+with_copy("vacio") do |copy|
+  copy.join("AGENTS.md").write("")
+  out, _ = validate(copy)
+  check(out.include?("required-file-empty"), "AGENTS.md vacío aceptado")
+end
+with_copy("estado") do |copy|
+  index = copy.join("projects/index.md")
+  index.write(index.read.sub("| Mi primer proyecto | activo |", "| Mi primer proyecto | archivado |"))
+  out, _ = validate(copy)
+  check(out.include?("index-incongruente"), "estado incongruente aceptado")
+end
+
+# 4. Instalación completa sin preguntas.
+with_copy("init") do |copy|
+  out, st = init(copy, "--areas", "Trabajo,Salud y bienestar", "--modulos", "listas,finanzas", "--ias", "claude-code,cursor,gemini,codex")
+  check(st.success?, "kos_init falló:\n#{out}")
+  vout, vst = validate(copy)
+  check(vst.success?, "KOS instalado no valida:\n#{vout}")
+  %w[CLAUDE.md GEMINI.md .claude/skills/kos/SKILL.md .cursor/rules/kos.mdc knowledge/lists/movies.md
+     projects/finanzas/data/gastos.csv knowledge/areas/salud-y-bienestar.md].each do |f|
+    check(copy.join(f).exist?, "falta #{f} después de instalar")
+  end
+  check(copy.join("AGENTS.md").read.include?("Persona Prueba"), "AGENTS.md sin el nombre")
+  check(copy.join("kos.yaml").read.include?("instalado: true"), "kos.yaml no quedó instalado")
+  check(copy.join("ONBOARDING/RECETAS.md").read.include?("(módulo finanzas)"), "faltan recetas de finanzas")
+
+  _, again = init(copy)
+  check(!again.success?, "permitió reinstalar sin --forzar")
+
+  gastos = copy.join("projects/finanzas/data/gastos.csv")
+  gastos.write(gastos.read + "2026-02-01,comida,100.50,ARS,ok\n2026-01-01,inventada,diez,pesos,mal\n")
+  gout, _ = validate(copy)
+  %w[csv-categoria csv-monto csv-moneda csv-orden].each { |c| check(gout.include?(c), "no detectó #{c}") }
+
+  # 5. Chequeo de privacidad.
+  deny = Pathname.new(Dir.tmpdir).join("kos-test-deny-#{$$}.txt")
+  deny.write("# prueba\nPersona Prueba\n")
+  pout, pst = run("ruby", copy.join("tools/kos_privacy_check.rb").to_s, "--denylist", deny.to_s, copy.to_s)
+  check(!pst.success? && pout.include?("Persona Prueba"), "privacidad no encontró el nombre")
+  deny.write(["termino", "inexistente", $$.to_s].join("-") + "\n")
+  _, pst2 = run("ruby", copy.join("tools/kos_privacy_check.rb").to_s, "--denylist", deny.to_s, copy.to_s)
+  check(pst2.success?, "privacidad dio falso positivo")
+  deny.delete
+end
+
+# 6. Módulo agregado después, y placeholders pendientes.
+with_copy("modulo") do |copy|
+  init(copy)
+  out, st = run("ruby", copy.join("tools/kos_init.rb").to_s, "--solo-modulo", "listas")
+  check(st.success? && copy.join("knowledge/lists/books.md").exist?, "--solo-modulo falló:\n#{out}")
+  check(copy.join("kos.yaml").read.match?(/listas:\s*true/), "kos.yaml no marcó el módulo")
+  copy.join("knowledge/profile.md").write("# {{OWNER_NAME}}\n")
+  vout, _ = validate(copy)
+  check(vout.include?("placeholder-pendiente"), "no detectó marcadores sin completar")
+end
+
+# 7. Respaldo y restauración.
+with_copy("backup") do |copy|
+  out, st = run("ruby", copy.join("tools/kos_backup.rb").to_s, copy.to_s)
+  bundle = out[/Respaldo: (\S+)/, 1]
+  check(st.success? && bundle, "no se creó el respaldo:\n#{out}")
+  if bundle
+    vout, vst = run("ruby", copy.join("tools/kos_backup.rb").to_s, "--verify", bundle)
+    check(vst.success? && vout.include?("RESTAURACIÓN OK"), "el respaldo no se verificó:\n#{vout}")
+  end
+end
+
+if $failures.empty?
+  puts "OK — todas las pruebas pasaron."
+else
+  puts "FALLAS (#{$failures.size}):"
+  $failures.each { |f| puts "- #{f}" }
+  exit 1
+end

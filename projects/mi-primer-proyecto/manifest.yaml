@@ -1,0 +1,17 @@
+schema_version: 1
+project_id: mi-primer-proyecto
+name: Mi primer proyecto
+lifecycle: active
+priority: 3
+owner: "{{OWNER_NAME}}"
+context:
+  areas: []
+skills: {enabled: [], planned: []}
+tools:
+  read: [projects/mi-primer-proyecto]
+  write: [projects/mi-primer-proyecto]
+memory: {scope: "project:mi-primer-proyecto", cross_project: deny}
+security: {max_autonomy: A2, sensitivity: internal}
+definition_of_done:
+  - kos-instalado-y-validado
+  - una-ia-conectada-registra-una-tarea

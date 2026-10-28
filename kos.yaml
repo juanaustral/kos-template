@@ -1,0 +1,16 @@
+# Configuración de tu KOS. La completa el asistente: ruby tools/kos_init.rb
+# Puedes editarla a mano; después corre ruby tools/kos_validate.rb.
+schema_version: 1
+instalado: false          # el asistente lo pone en true
+dueno:
+  nombre: "{{OWNER_NAME}}"
+  idioma: "{{IDIOMA}}"     # ej.: español, english
+  trato: "{{TRATO}}"       # ej.: tú, vos, usted
+  estilo: "{{ESTILO}}"     # ej.: directo y breve, sin emojis
+modulos:
+  listas: false            # películas, series, libros
+  finanzas: false          # registro de gastos en CSV
+chequeos:
+  github_prs: false        # marca tareas abiertas cuyo PR ya está mergeado (requiere gh)
+  filas_de_listas: true    # impide que una IA borre filas de tus listas
+ias: []                    # claude-code, claude-ai, chatgpt, codex, cursor, gemini

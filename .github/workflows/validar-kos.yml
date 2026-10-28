@@ -1,0 +1,19 @@
+# Valida tu KOS en cada push y una vez por día. Sin IA ni credenciales.
+# Si falla, GitHub te avisa por mail.
+name: validar-kos
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 11 * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - run: ruby tools/kos_validate.rb

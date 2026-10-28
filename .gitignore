@@ -1,0 +1,7 @@
+backups/
+*.tar.gz
+*.sha256
+.env
+.env.*
+.DS_Store
+node_modules/

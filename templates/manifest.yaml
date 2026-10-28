@@ -1,0 +1,15 @@
+schema_version: 1
+project_id: <id>
+name: <Nombre del proyecto>
+lifecycle: active            # active | paused | finished | archived
+priority: 3                  # 1 (máxima) a 5
+owner: <nombre>
+context:
+  areas: []                  # áreas de knowledge/areas/ relacionadas
+skills: {enabled: [], planned: []}
+tools:
+  read: [projects/<id>]      # carpetas que una IA puede leer para este proyecto
+  write: [projects/<id>]     # solo la carpeta del propio proyecto
+memory: {scope: "project:<id>", cross_project: deny}
+security: {max_autonomy: A2, sensitivity: internal}   # A1 | A2 | A3 ; public | internal | confidential
+definition_of_done: []

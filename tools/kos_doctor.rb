@@ -24,7 +24,7 @@ silencioso = ARGV.include?("--silencioso")
 problems = []
 fixed = []
 
-def git(*args) = Open3.capture2("git", "-C", ROOT.to_s, *args)[0]
+def git(*args) = Open3.capture3("git", "-C", ROOT.to_s, *args)[0] # sin avisos de Git (carpetas privadas que el usuario no puede leer)
 
 # 1. Permisos, solo si KOS está compartido entre usuarios (carpeta raíz con setgid): todo editable por su grupo.
 #    Ej.: un servidor donde dos agentes corren con usuarios distintos del mismo grupo.

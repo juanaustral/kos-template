@@ -1,5 +1,13 @@
 # Cambios
 
+## 1.5.0 — 2026-10-28
+- Nuevo: skills compartidas. Las skills (`SKILL.md`, formato abierto de agentskills.io) viven en `skills/` y las usan todas tus IAs. Las IAs proponen cambios y una persona de `skills/config.yaml` los aprueba; el validador da error si una skill aprobada cambia sin aprobación. Herramienta: `tools/kos_skills.rb`. Manual: `docs/manual/12-skills-compartidas.md`.
+- `importar` trae skills de otras personas: avisa que son ajenas, muestra autor, licencia y riesgos, y pregunta si van tal cual o adaptadas. Sin licencia no entran.
+- Skill guía `skills-kos` y casos de prueba por skill (`evals/casos.md`) para que la calidad sea pareja entre IAs.
+- El asistente pregunta quién aprueba skills (`--aprobadores`) y, con Claude Code, crea los enlaces en `.claude/skills/`.
+- Los comandos y mensajes de `kos_skills.rb` están en español.
+- El actualizador toma la lista de archivos de motor de la versión nueva (antes no traía carpetas nuevas). Al actualizar desde 1.4.x, corre después `ruby tools/kos_init.rb --rellenar`: crea `skills/config.yaml` con tu nombre como aprobador.
+
 ## 1.4.4 — 2026-10-28
 - README bilingüe (español e inglés): cómo funciona, requisitos previos, instrucciones para que una IA instale y use KOS, conexión por IA y herramienta, autoría y licencia.
 - Tres imágenes en `docs/img/` (portada, flujo y zonas).

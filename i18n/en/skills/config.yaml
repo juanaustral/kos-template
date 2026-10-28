@@ -1,0 +1,11 @@
+# Shared skills. Read by tools/kos_skills.rb. Manual: docs/manual/12-shared-skills.md
+# Who can approve or reject skill changes. People only, never agents.
+# The setup assistant (kos_init.rb) puts your name here; add more people if they share this KOS.
+# Keys and values stay in Spanish because the tool reads them: aprobadores = approvers, origenes = origins
+# (propia = your own, adaptada = adapted from someone else's, tercero = someone else's as is).
+aprobadores:
+  - "{{APROBADOR}}"
+origenes:
+  - propia
+  - adaptada
+  - tercero

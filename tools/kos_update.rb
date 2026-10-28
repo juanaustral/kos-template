@@ -100,6 +100,9 @@ Dir.mktmpdir("kos-update-") do |tmp|
   abort t("La versión nueva no se pudo preparar:\n#{out}", "The new version could not be prepared:\n#{out}") unless st.success?
 
   # 2. Plan: qué se agrega, actualiza, deja como conflicto o borra.
+  # La lista de archivos de motor la dicta la versión nueva: puede sumar carpetas (ej. skills/ en 1.5.0).
+  %i[GLOBS LOCK NEW_SUFFIX].each { |c| KosMotor.send(:remove_const, c) if KosMotor.const_defined?(c, false) }
+  load fresh.join("tools/kos_motor.rb").to_s
   new_files = KosMotor.current_hashes(fresh)
   lock = KosMotor.read_lock(ROOT)
   if lock.nil? && !opts[:sobrescribir]

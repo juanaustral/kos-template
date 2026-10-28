@@ -54,6 +54,7 @@ OptionParser.new do |o|
   o.on("--areas LISTA", "Áreas separadas por coma (ej.: Trabajo,Salud)") { |v| opts[:areas] = v }
   o.on("--modulos LISTA", "Módulos: #{MODULES.join(", ")}") { |v| opts[:modulos] = v }
   o.on("--ias LISTA", "IAs: #{IAS.join(", ")}") { |v| opts[:ias] = v }
+  o.on("--aprobadores LISTA", "Quién aprueba skills / skill approvers") { |v| opts[:aprobadores] = v }
   o.on("--si", "No preguntar; usar opciones y valores por defecto") { opts[:si] = true }
   o.on("--solo-modulo NOMBRE", "--only-module NAME", "Instalar solo un módulo en un KOS ya instalado") { |v| opts[:solo_modulo] = v }
   o.on("--lang IDIOMA", "es (por defecto) o en (English)") { |v| opts[:lang] = v }
@@ -70,7 +71,7 @@ TEXTS = {
     nombre: "¿Cómo quieres que te llamen las IAs?", idioma: "¿En qué idioma te responden?",
     trato: "¿Trato? (tú, vos, usted)", estilo: "¿Estilo de respuesta?",
     areas: "Áreas de tu vida o trabajo (separadas por coma)", modulos: "Módulos opcionales (listas, finanzas; vacío = ninguno)",
-    ias: "IAs que usas", defaults: ["Dueño", "español", "tú", "directo y breve, sin relleno ni emojis", "Trabajo,Personal"],
+    ias: "IAs que usas", aprobadores: "Personas que aprueban skills (separadas por coma)", defaults: ["Dueño", "español", "tú", "directo y breve, sin relleno ni emojis", "Trabajo,Personal"],
     done: "Listo.", errors: "Hay errores: revísalos arriba.",
     next: "Próximos pasos:\n1. Guarda este estado:  git add -A && git commit -m \"KOS instalado\"\n2. Conecta tu primera IA: docs/manual/03-conectar-tus-ias.md\n3. Pídele: \"Lee AGENTS.md y resúmeme KOS en cinco líneas.\""
   },
@@ -79,7 +80,7 @@ TEXTS = {
     nombre: "What should AIs call you?", idioma: "Which language should they answer in?",
     trato: "Form of address? (informal, formal)", estilo: "Answer style?",
     areas: "Areas of your life or work (comma-separated)", modulos: "Optional modules (lists, finance; empty = none)",
-    ias: "AIs you use", defaults: ["Owner", "English", "informal", "direct and brief, no fluff or emojis", "Work,Personal"],
+    ias: "AIs you use", aprobadores: "People who approve skills (comma-separated)", defaults: ["Owner", "English", "informal", "direct and brief, no fluff or emojis", "Work,Personal"],
     done: "Done.", errors: "There are errors: see above.",
     next: "Next steps:\n1. Save this state:  git add -A && git commit -m \"KOS installed\"\n2. Connect your first AI: docs/manual/03-connect-your-ais.md\n3. Ask it: \"Read AGENTS.md and summarize KOS in five lines.\""
   }
@@ -205,6 +206,11 @@ def install_adapter(ia)
     FileUtils.mkdir_p(ROOT.join(".claude/skills/kos"))
     FileUtils.cp(ROOT.join("adapters/claude-code/skills/kos/SKILL.md"), ROOT.join(".claude/skills/kos/SKILL.md"))
     say "  Claude Code: CLAUDE.md y .claude/skills/kos/ listos"
+    if ROOT.join("tools/kos_skills.rb").file? # skills compartidas: enlaces relativos en .claude/skills/
+      ok = system("ruby", ROOT.join("tools/kos_skills.rb").to_s, "enlazar", "claude", "--destino", ROOT.join(".claude/skills").to_s,
+                  out: File::NULL, err: File::NULL)
+      say(ok ? "  Claude Code: skills compartidas enlazadas en .claude/skills/" : "  Claude Code: no pude enlazar skills/ (sin enlaces simbólicos); ver docs/manual/12")
+    end
   when "cursor"
     FileUtils.mkdir_p(ROOT.join(".cursor/rules"))
     FileUtils.cp(ROOT.join("adapters/cursor/kos.mdc"), ROOT.join(".cursor/rules/kos.mdc"))
@@ -221,6 +227,16 @@ def install_adapter(ia)
   else
     abort "IA desconocida: #{ia}. Disponibles: #{IAS.join(", ")}"
   end
+end
+
+# Pone los aprobadores de skills en skills/config.yaml (identificador = nombre en minúsculas, sin tildes).
+def set_approvers(names)
+  path = ROOT.join("skills/config.yaml")
+  return unless path.file?
+  ids = names.map { |n| slug(n) }.reject(&:empty?).uniq
+  return if ids.empty?
+  text = File.read(path, encoding: "utf-8")
+  File.write(path, text.sub(/^aprobadores:\n(?:  - .*\n)*/) { "aprobadores:\n" + ids.map { |id| "  - #{id}\n" }.join })
 end
 
 # El validador corre antes de cada commit (se saltea con git commit --no-verify).
@@ -253,6 +269,9 @@ if opts[:solo_modulo] || opts[:rellenar]
         append_recipes(lang, LANGS[lang][kind][:key], values)
       end
       (config["ias"] || config["ais"] || []).each { |ia| install_adapter(ia.to_s) if IAS.include?(ia.to_s) }
+      cfg = ROOT.join("skills/config.yaml") # al actualizar desde una versión sin skills, config.yaml no viene (son datos)
+      File.write(cfg, "aprobadores:\n  - \"{{APROBADOR}}\"\norigenes:\n  - propia\n  - adaptada\n  - tercero\n") if cfg.dirname.directory? && !cfg.file?
+      set_approvers([values["OWNER_NAME"].to_s]) if cfg.file? && cfg.read.include?("{{APROBADOR}}")
       install_hook
       say "  marcadores completados / placeholders filled ✓"
     else
@@ -282,6 +301,7 @@ estilo = ask(t[:estilo], opts[:estilo] || d[3], opts)
 areas = list(ask(t[:areas], opts[:areas] || d[4], opts))
 modulos = list(ask(t[:modulos], opts[:modulos] || "", opts))
 ias = list(ask("#{t[:ias]} (#{IAS.join(", ")})", opts[:ias] || "", opts))
+aprobadores = list(ask(t[:aprobadores], opts[:aprobadores] || nombre, opts))
 (modulos - MODULES).each { |m| abort "Módulo desconocido / unknown module: #{m}. No se cambió nada / nothing was changed." }
 (ias - IAS).each { |i| abort "IA desconocida / unknown AI: #{i}. No se cambió nada / nothing was changed." }
 skipped = areas.select { |a| slug(a).empty? }
@@ -311,6 +331,7 @@ areas.each do |area|
 end
 
 modulos.each { |m| install_module(lang, m, values) }
+set_approvers(aprobadores)
 ias.each { |i| install_adapter(i) }
 
 config_text = File.read(config_path, encoding: "utf-8")

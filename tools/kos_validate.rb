@@ -173,7 +173,7 @@ secret_patterns = {
   "slack-token" => /\bxox[abprs]-[A-Za-z0-9-]{10,}/,
   "google-key" => /\bAIza[0-9A-Za-z_-]{35}\b/
 }
-files_in(["*.{md,yaml,yml}", "{ONBOARDING,knowledge,projects,registry,templates,decisions,docs,adapters,modules}/**/*"]).each do |file|
+files_in(["*.{md,yaml,yml}", "{ONBOARDING,knowledge,projects,registry,templates,decisions,docs,adapters,modules,skills}/**/*"]).each do |file|
   text = (file.read rescue next)
   next unless text.valid_encoding?
   secret_patterns.each do |name, pattern|
@@ -232,6 +232,14 @@ if rows_check && ENV["KOS_ALLOW_ROW_DROP"] != "1" && !row_drop_allowed && ROOT.j
     after = file.read.lines.count { |l| l.start_with?("|") }
     add(errors, "list-rows-dropped", file, "#{before} -> #{after} filas de tabla") if after < before
   end
+end
+
+# --- Skills compartidas: formato, casos de prueba y que nada cambie sin pasar por kos_skills.rb aprobar ---
+if Pathname.new(__dir__).join("kos_skills.rb").file?
+  require_relative "kos_skills"
+  skill_errors, skill_warnings = KosSkills.revisar(ROOT)
+  skill_errors.each { |code, file, message| add(errors, code, ROOT.join(file), message) }
+  skill_warnings.each { |code, file, message| add(warnings, code, ROOT.join(file), message) }
 end
 
 # --- Actualización: conflictos pendientes (archivos .kos-new) ---

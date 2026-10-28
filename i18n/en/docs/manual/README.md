@@ -15,4 +15,5 @@
 | 09 | [Customize](09-customize.md) | Your own lists, modules, recipes and rules. |
 | 10 | [Troubleshooting](10-troubleshooting.md) | Quick fixes. |
 | 11 | [Several AIs at once](11-several-ais.md) | No overwrites: writing, syncing and checking. |
+| 12 | [Shared skills](12-shared-skills.md) | The same skills for all your AIs, with your approval. |
 | — | [Glossary](glossary.md) | KOS vocabulary. |

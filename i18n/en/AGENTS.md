@@ -26,6 +26,7 @@ For a concrete task (capture an idea, move a task forward, log a decision, creat
 | Lists (notes, reminders, tools and those of active modules) | `knowledge/lists/` |
 | How to do routine tasks | `ONBOARDING/RECIPES.md` |
 | How to write and sensitive data | `ONBOARDING/WRITING-RULES.md` |
+| Skills shared by every AI (use, propose, import) | `skills/README.md`; approved skills are never edited |
 | Templates for new files | `templates/` |
 | Configuration (modules, checks) | `kos.yaml` |
 | Manual for people | `docs/manual/` — you don't need to read it |

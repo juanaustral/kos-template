@@ -1,0 +1,10 @@
+# Skills compartidas. Lo lee tools/kos_skills.rb. Manual: docs/manual/12-skills-compartidas.md
+# Quién puede aprobar o rechazar cambios de skills. Solo personas, nunca agentes.
+# El asistente (kos_init.rb) pone aquí tu nombre; agrega más personas si comparten este KOS.
+aprobadores:
+  - "{{APROBADOR}}"
+# De dónde puede venir una skill (metadata.origen). Las ajenas entran solo con 'importar'.
+origenes:
+  - propia
+  - adaptada
+  - tercero

@@ -26,6 +26,7 @@ Para una tarea concreta (capturar una idea, avanzar una tarea, registrar una dec
 | Listas (notas, recordatorios, herramientas y las de módulos activos) | `knowledge/lists/` |
 | Cómo hacer tareas habituales | `ONBOARDING/RECETAS.md` |
 | Cómo escribir y datos sensibles | `ONBOARDING/REGLAS-ESCRITURA.md` |
+| Skills compartidas entre IAs (usarlas, proponer, importar) | `skills/README.md`; las aprobadas no se editan |
 | Moldes para archivos nuevos | `templates/` |
 | Configuración (módulos, chequeos) | `kos.yaml` |
 | Manual para personas | `docs/manual/` — no hace falta que lo leas |

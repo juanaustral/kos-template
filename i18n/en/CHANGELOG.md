@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.3 — 2026-10-28
+- CHANGELOG without personal names (the licensor appears only in `LICENSE.md`).
+
 ## 1.4.2 — 2026-10-28
 - License now names its licensors (`Required Notice` line in `LICENSE.md`).
 - `kos_privacy_check.rb`: list lines starting with `!` are allowed exact phrases.

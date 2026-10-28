@@ -1,5 +1,8 @@
 # Cambios
 
+## 1.4.3 — 2026-10-28
+- CHANGELOG sin nombres propios (el titular figura solo en `LICENSE.md`).
+
 ## 1.4.2 — 2026-10-28
 - Licencia con titular (línea `Required Notice` de `LICENSE.md`).
 - `kos_privacy_check.rb`: las líneas que empiezan con `!` en la lista son frases exactas permitidas.

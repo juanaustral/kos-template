@@ -1,0 +1,9 @@
+id,name,type
+housing,Housing (rent or mortgage),fixed
+utilities,Utilities (power gas water internet),fixed
+groceries,Groceries and food,variable
+transport,Transport,variable
+health,Health,variable
+subscriptions,Subscriptions and software,fixed
+leisure,Going out and leisure,variable
+other,Other,variable

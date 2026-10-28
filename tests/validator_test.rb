@@ -78,6 +78,7 @@ with_copy("init") do |copy|
   check(copy.join("AGENTS.md").read.include?("Persona Prueba"), "AGENTS.md sin el nombre")
   check(copy.join("kos.yaml").read.include?("instalado: true"), "kos.yaml no quedó instalado")
   check(copy.join("ONBOARDING/RECETAS.md").read.include?("(módulo finanzas)"), "faltan recetas de finanzas")
+  check(!copy.join("i18n").exist?, "quedó i18n/ en la instalación en español")
 
   _, again = init(copy)
   check(!again.success?, "permitió reinstalar sin --forzar")
@@ -109,7 +110,35 @@ with_copy("modulo") do |copy|
   check(vout.include?("placeholder-pendiente"), "no detectó marcadores sin completar")
 end
 
-# 7. Respaldo y restauración.
+# 7. Instalación en inglés.
+with_copy("en") do |copy|
+  out, st = init(copy, "--lang", "en", "--areas", "Work,Health", "--modulos", "lists,finance", "--ias", "claude-code")
+  check(st.success?, "kos_init --lang en falló:\n#{out}")
+  vout, vst = validate(copy)
+  check(vst.success?, "KOS en inglés no valida:\n#{vout}")
+  %w[ONBOARDING/RECIPES.md projects/my-first-project/tasks.md projects/finance/data/expenses.csv
+     knowledge/lists/movies.md knowledge/areas/health.md docs/manual/00-what-is-kos.md CLAUDE.md].each do |f|
+    check(copy.join(f).exist?, "falta #{f} en la instalación en inglés")
+  end
+  %w[ONBOARDING/RECETAS.md projects/mi-primer-proyecto docs/manual/00-que-es-kos.md i18n README.en.md].each do |f|
+    check(!copy.join(f).exist?, "quedó #{f} en la instalación en inglés")
+  end
+  check(copy.join("ONBOARDING/RECIPES.md").read.include?("(module finance)"), "faltan recetas de finance")
+  check(copy.join("kos.yaml").read.include?("installed: true"), "kos.yaml en inglés no quedó instalado")
+  check(copy.join("AGENTS.md").read.include?("Form of address: informal"), "AGENTS.md en inglés sin trato")
+  ex = copy.join("projects/finance/data/expenses.csv")
+  ex.write(ex.read + "2026-01-05,groceries,12.5,USD,ok\n2026-01-01,nope,x,usd,bad\n")
+  eout, _ = validate(copy)
+  %w[csv-categoria csv-monto csv-moneda csv-orden].each { |c| check(eout.include?(c), "en: no detectó #{c}") }
+end
+with_copy("en-modulo") do |copy|
+  init(copy, "--lang", "en")
+  out, st = run("ruby", copy.join("tools/kos_init.rb").to_s, "--only-module", "lists")
+  check(st.success? && copy.join("knowledge/lists/books.md").read.include?("Author"), "--only-module en falló:\n#{out}")
+  check(copy.join("kos.yaml").read.match?(/lists:\s*true/), "kos.yaml en inglés no marcó el módulo")
+end
+
+# 8. Respaldo y restauración.
 with_copy("backup") do |copy|
   out, st = run("ruby", copy.join("tools/kos_backup.rb").to_s, copy.to_s)
   bundle = out[/Respaldo: (\S+)/, 1]

@@ -1,5 +1,7 @@
 # KOS — tu memoria, cualquier IA
 
+> **English:** run `ruby tools/kos_init.rb --lang en` — see [`README.en.md`](README.en.md).
+
 KOS es un sistema para que **tu conocimiento viva en tus archivos y no en la memoria de una IA**. Proyectos, tareas, decisiones, ideas y listas quedan en carpetas de texto simple (Markdown) dentro de Git. Cualquier IA —Claude, ChatGPT, Codex, Cursor, Gemini— lee la misma entrada, sigue las mismas reglas y registra lo que hace. Cambias de IA cuando quieras y no pierdes nada.
 
 ## Instalación en cinco pasos

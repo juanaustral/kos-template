@@ -1,0 +1,17 @@
+# Your KOS configuration. The wizard fills it in: ruby tools/kos_init.rb --lang en
+# You can edit it by hand; then run ruby tools/kos_validate.rb.
+schema_version: 1
+lang: en
+installed: false          # the wizard sets it to true
+owner:
+  name: "{{OWNER_NAME}}"
+  language: "{{IDIOMA}}"   # e.g. English
+  address: "{{TRATO}}"     # e.g. informal, formal
+  style: "{{ESTILO}}"      # e.g. direct and brief, no emojis
+modules:
+  lists: false             # movies, series, books
+  finance: false           # expense log in CSV
+checks:
+  github_prs: false        # flags open tasks whose PR is already merged (needs gh)
+  list_rows: true          # stops an AI from deleting rows from your lists
+ais: []                    # claude-code, claude-ai, chatgpt, codex, cursor, gemini

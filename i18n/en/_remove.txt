@@ -1,0 +1,14 @@
+# Spanish paths removed when installing in English (relative to the KOS root).
+README.en.md
+ONBOARDING/RECETAS.md
+ONBOARDING/REGLAS-ESCRITURA.md
+ONBOARDING/IA-WORKFLOW.md
+decisions/DEC-001-registro-obligatorio.md
+decisions/DEC-002-estados-consistentes.md
+decisions/DEC-003-kos-liviano.md
+projects/mi-primer-proyecto
+templates/tareas.md
+adapters/pegar-en-una-ia.md
+modules/listas
+modules/finanzas
+docs/manual

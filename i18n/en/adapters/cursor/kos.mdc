@@ -1,0 +1,6 @@
+---
+description: KOS, {{OWNER_NAME}}'s memory and source of truth
+alwaysApply: true
+---
+
+This repository is KOS. Before working, read `AGENTS.md` and follow its reading order. All the rules (mandatory logging, three-line Wrap-up, approvals, untrusted content) live there.

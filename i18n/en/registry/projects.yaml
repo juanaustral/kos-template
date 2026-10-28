@@ -1,0 +1,7 @@
+schema_version: 1
+projects:
+  - id: my-first-project
+    name: My first project
+    lifecycle: active
+    priority: 3
+    path: projects/my-first-project

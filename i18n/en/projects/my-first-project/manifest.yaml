@@ -1,0 +1,17 @@
+schema_version: 1
+project_id: my-first-project
+name: My first project
+lifecycle: active
+priority: 3
+owner: "{{OWNER_NAME}}"
+context:
+  areas: []
+skills: {enabled: [], planned: []}
+tools:
+  read: [projects/my-first-project]
+  write: [projects/my-first-project]
+memory: {scope: "project:my-first-project", cross_project: deny}
+security: {max_autonomy: A2, sensitivity: internal}
+definition_of_done:
+  - kos-installed-and-validated
+  - a-connected-ai-logs-a-task

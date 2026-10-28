@@ -51,11 +51,14 @@ begin
 rescue StandardError => e
   add(errors, "yaml-invalid", ROOT.join("kos.yaml"), e.message.lines.first.strip)
 end
-checks = config["chequeos"].is_a?(Hash) ? config["chequeos"] : {}
-installed = config["instalado"] == true
+# Las claves de kos.yaml existen en español y en inglés.
+checks = [config["chequeos"], config["checks"]].find { |c| c.is_a?(Hash) } || {}
+installed = config["instalado"] == true || config["installed"] == true
+pr_check = checks["github_prs"] == true
+rows_check = checks.fetch("filas_de_listas", checks.fetch("list_rows", true)) != false
 
 # --- YAML válido ---
-yaml_files = files_in(["{projects,registry,templates,modules}/**/*.{yaml,yml}"])
+yaml_files = files_in(["{projects,registry,templates,modules,i18n}/**/*.{yaml,yml}"])
 yaml_files.each do |file|
   load_yaml_file(file)
 rescue StandardError => e
@@ -105,8 +108,8 @@ project_dirs.each do |id|
 end
 
 # --- Estados consistentes (DEC-002) ---
-closed_pattern = /\A\s*(archiv|finaliz|cerrad|termin)/i
-state_head = ->(text) { text.to_s.sub(/\A\s*Estado:\s*/, "").split(/[(;.,]/).first.to_s }
+closed_pattern = /\A\s*(archiv|finaliz|finish|cerrad|closed|termin)/i
+state_head = ->(text) { text.to_s.sub(/\A\s*(Estado|Status):\s*/, "").split(/[(;.,]/).first.to_s }
 index_file = ROOT.join("projects/index.md")
 index_lines = index_file.file? ? index_file.read.lines : []
 registry["projects"].each do |p|
@@ -114,9 +117,9 @@ registry["projects"].each do |p|
   closed = %w[archived finished].include?(p["lifecycle"])
   project_file = ROOT.join("projects", id, "project.md")
   if project_file.file?
-    estado = project_file.read.lines.find { |l| l.start_with?("Estado:") }
+    estado = project_file.read.lines.find { |l| l.start_with?("Estado:", "Status:") }
     if estado.nil?
-      add(errors, "estado-missing", project_file, "Falta la línea Estado:")
+      add(errors, "estado-missing", project_file, "Falta la línea Estado: (o Status:)")
     elsif state_head.(estado).match?(closed_pattern) != closed
       add(errors, "estado-incongruente", project_file, "registro: #{p["lifecycle"]} / #{estado.strip}")
     end
@@ -130,9 +133,9 @@ registry["projects"].each do |p|
 end
 
 # --- PRs citados en tareas (opcional, requiere gh) ---
-if checks["github_prs"] == true
+if pr_check
   pr_refs = %r{github\.com/([\w.-]+/[\w.-]+)/pull/(\d+)|\b([\w.-]+/[\w.-]+)#(\d+)}
-  files_in("projects/*/tareas.md").each do |file|
+  files_in("projects/*/{tareas,tasks}.md").each do |file|
     file.read.lines.each_with_index do |line, i|
       next unless line.match?(/\A\s*- \[ \]/)
       line.scan(pr_refs).each do |a, b, c, d|
@@ -149,7 +152,7 @@ if checks["github_prs"] == true
 end
 
 # --- Enlaces rotos ---
-markdown_files = files_in(["*.md", "{ONBOARDING,knowledge,projects,registry,docs,templates,decisions,adapters,modules}/**/*.md"])
+markdown_files = files_in(["*.md", "{ONBOARDING,knowledge,projects,registry,docs,templates,decisions,adapters,modules,i18n}/**/*.md"])
 markdown_files.each do |file|
   file.read.scan(/\[[^\]]+\]\(([^)\s]+)\)/).flatten.each do |target|
     next if target.start_with?("http://", "https://", "mailto:", "#")
@@ -174,23 +177,27 @@ files_in(["*.{md,yaml,yml}", "{ONBOARDING,knowledge,projects,registry,templates,
   end
 end
 
-# --- Módulo finanzas ---
-gastos = ROOT.join("projects/finanzas/data/gastos.csv")
-categorias = ROOT.join("projects/finanzas/data/categorias.csv")
-if gastos.file?
+# --- Módulo finanzas (español) / finance module (inglés) ---
+[
+  { dir: "projects/finanzas/data", rows: "gastos.csv", cats: "categorias.csv", cols: %w[fecha categoria monto moneda nota] },
+  { dir: "projects/finance/data", rows: "expenses.csv", cats: "categories.csv", cols: %w[date category amount currency note] }
+].each do |mod|
+  gastos = ROOT.join(mod[:dir], mod[:rows])
+  categorias = ROOT.join(mod[:dir], mod[:cats])
+  next unless gastos.file?
+  fecha_col, cat_col, monto_col, moneda_col = mod[:cols]
   begin
     cats = categorias.file? ? CSV.read(categorias.to_s, headers: true, encoding: "bom|utf-8").map { |r| r["id"] } : []
-    add(errors, "csv-categorias-missing", categorias, "Falta categorias.csv") unless categorias.file?
+    add(errors, "csv-categorias-missing", categorias, "Falta #{mod[:cats]}") unless categorias.file?
     rows = CSV.read(gastos.to_s, headers: true, encoding: "bom|utf-8")
-    expected = %w[fecha categoria monto moneda nota]
-    add(errors, "csv-header", gastos, "Cabecera esperada: #{expected.join(",")}") unless rows.headers == expected
+    add(errors, "csv-header", gastos, "Cabecera esperada: #{mod[:cols].join(",")}") unless rows.headers == mod[:cols]
     previous = ""
     rows.each_with_index do |r, i|
       line = i + 2
-      add(errors, "csv-categoria", gastos, "línea #{line}: categoría desconocida (#{r["categoria"]})") unless cats.include?(r["categoria"])
-      add(errors, "csv-monto", gastos, "línea #{line}: monto no numérico") unless r["monto"].to_s.match?(/\A-?\d+(\.\d+)?\z/)
-      add(errors, "csv-moneda", gastos, "línea #{line}: moneda de tres letras") unless r["moneda"].to_s.match?(/\A[A-Z]{3}\z/)
-      fecha = r["fecha"].to_s
+      add(errors, "csv-categoria", gastos, "línea #{line}: categoría desconocida (#{r[cat_col]})") unless cats.include?(r[cat_col])
+      add(errors, "csv-monto", gastos, "línea #{line}: monto no numérico") unless r[monto_col].to_s.match?(/\A-?\d+(\.\d+)?\z/)
+      add(errors, "csv-moneda", gastos, "línea #{line}: moneda de tres letras") unless r[moneda_col].to_s.match?(/\A[A-Z]{3}\z/)
+      fecha = r[fecha_col].to_s
       if fecha.match?(/\A\d{4}-\d{2}-\d{2}\z/)
         add(errors, "csv-orden", gastos, "línea #{line}: fecha fuera de orden (#{fecha} después de #{previous})") if fecha < previous
         previous = fecha
@@ -204,7 +211,7 @@ if gastos.file?
 end
 
 # --- Listas: no se pierden filas respecto del último commit (salvo KOS_ALLOW_ROW_DROP=1) ---
-if checks.fetch("filas_de_listas", true) != false && ENV["KOS_ALLOW_ROW_DROP"] != "1" && ROOT.join(".git").exist?
+if rows_check && ENV["KOS_ALLOW_ROW_DROP"] != "1" && ROOT.join(".git").exist?
   files_in("knowledge/lists/*.md").each do |file|
     rel = relative(file)
     old = `git -C "#{ROOT}" show HEAD:"#{rel}" 2>/dev/null`.force_encoding(Encoding::UTF_8)
@@ -223,7 +230,7 @@ if installed
     text.scan(/\{\{[A-Z_]+\}\}/).uniq.each { |m| add(errors, "placeholder-pendiente", file, m) }
   end
 else
-  add(warnings, "kos-no-instalado", ROOT.join("kos.yaml"), "Corre ruby tools/kos_init.rb para personalizar tu KOS")
+  add(warnings, "kos-no-instalado", ROOT.join("kos.yaml"), "Corre ruby tools/kos_init.rb (in English: ruby tools/kos_init.rb --lang en)")
 end
 
 puts "Validador de KOS"

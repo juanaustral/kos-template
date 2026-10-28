@@ -1,0 +1,15 @@
+schema_version: 1
+project_id: <id>
+name: <Project name>
+lifecycle: active            # active | paused | finished | archived
+priority: 3                  # 1 (highest) to 5
+owner: <name>
+context:
+  areas: []                  # related areas from knowledge/areas/
+skills: {enabled: [], planned: []}
+tools:
+  read: [projects/<id>]      # folders an AI may read for this project
+  write: [projects/<id>]     # only the project's own folder
+memory: {scope: "project:<id>", cross_project: deny}
+security: {max_autonomy: A2, sensitivity: internal}   # A1 | A2 | A3 ; public | internal | confidential
+definition_of_done: []

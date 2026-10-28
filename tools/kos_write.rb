@@ -312,7 +312,7 @@ begin
   in ["archivo", nil]
     need(opts, :ruta)
     rel = Pathname.new(opts[:ruta]).cleanpath.to_s
-    raise KosError.new("Ruta fuera de KOS o interna: #{rel}", 2) if rel.start_with?("/", "..", ".git")
+    raise KosError.new("Ruta fuera de KOS o interna: #{rel}", 2) if rel.start_with?("/", "..", ".git/") || rel == ".git"
     body = read_body(opts)
     with_lock do
       disk = ROOT.join(rel).file? ? File.read(ROOT.join(rel), encoding: "utf-8") : nil

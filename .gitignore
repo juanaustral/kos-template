@@ -5,3 +5,4 @@ backups/
 .env.*
 .DS_Store
 node_modules/
+*.bundle

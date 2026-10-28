@@ -3,7 +3,10 @@
 Estado: vigente.
 
 ## Cómo escribir
-- Antes de escribir: actualiza (`git pull`) si trabajas sobre una copia. Un cambio por commit, con mensaje claro. Nunca guardes secretos.
+- Para tareas, inbox, decisiones y listas usa la puerta única: `ruby tools/kos_write.rb --agente <tu-nombre> <operación>` (ver `--ayuda`). Escribe de a uno aunque haya otras IAs trabajando, commitea solo tu cambio con tu nombre y valida antes.
+- Si editas a mano: nunca `git add -A` ni `git commit -a` (te llevarías el trabajo a medio hacer de otra IA). Commitea solo tus rutas. Un cambio por commit, con mensaje claro. Nunca guardes secretos.
+- Si trabajas sobre una copia en otra máquina: `git pull` antes de escribir. En una carpeta compartida por varias IAs, el pull y el push los hace `tools/kos_sync.rb`.
+- Trabajo largo en un proyecto: avisa con `kos_write.rb tomar --proyecto <id>` y mira `reclamos` antes de empezar.
 - Capturas e ideas nuevas: `knowledge/inbox/AAAA-MM-DD-tema.md`.
 - Listas: edita el archivo de `knowledge/lists/` respetando sus columnas. No sobrescribas notas, puntajes ni estados de {{OWNER_NAME}}. No borres filas.
 - No reemplaces un documento en silencio: si algo cambia, deja lo anterior como histórico.

@@ -14,4 +14,5 @@
 | 08 | [Privacy and security](08-privacy-and-security.md) | What not to store and what never to delegate. |
 | 09 | [Customize](09-customize.md) | Your own lists, modules, recipes and rules. |
 | 10 | [Troubleshooting](10-troubleshooting.md) | Quick fixes. |
+| 11 | [Several AIs at once](11-several-ais.md) | No overwrites: writing, syncing and checking. |
 | — | [Glossary](glossary.md) | KOS vocabulary. |

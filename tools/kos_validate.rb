@@ -168,7 +168,10 @@ secret_patterns = {
   "private-key" => /-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----/,
   "generic-secret" => /(?:api[_-]?key|token|password|secret)\s*[:=]\s*["']?[A-Za-z0-9_\-]{18,}/i,
   "github-token" => /gh[pousr]_[A-Za-z0-9]{20,}/,
-  "openai-key" => /sk-[A-Za-z0-9_-]{20,}/
+  "openai-key" => /sk-[A-Za-z0-9_-]{20,}/,
+  "aws-key" => /\bAKIA[0-9A-Z]{16}\b/,
+  "slack-token" => /\bxox[abprs]-[A-Za-z0-9-]{10,}/,
+  "google-key" => /\bAIza[0-9A-Za-z_-]{35}\b/
 }
 files_in(["*.{md,yaml,yml}", "{ONBOARDING,knowledge,projects,registry,templates,decisions,docs,adapters,modules}/**/*"]).each do |file|
   text = (file.read rescue next)

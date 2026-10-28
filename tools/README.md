@@ -6,6 +6,9 @@ Solo usan archivos locales: no llaman a ninguna IA ni servicio externo. Requiere
 |---|---|---|
 | `kos_init.rb` | Asistente de instalación, módulos y marcadores tras actualizar | `ruby tools/kos_init.rb`, `--solo-modulo <nombre>`, `--rellenar` |
 | `kos_update.rb` | Actualiza el motor a una versión nueva sin tocar tus datos | `ruby tools/kos_update.rb --desde <zip o carpeta> [--simular]` |
+| `kos_write.rb` | Puerta única de escritura para varias IAs a la vez | `ruby tools/kos_write.rb --agente <nombre> <operación>`, `--ayuda` |
+| `kos_sync.rb` | Único pull/push con GitHub (para cron) | `ruby tools/kos_sync.rb [--simular]` |
+| `kos_doctor.rb` | Chequeo de salud: candados, olvidos, sincronización, índice, validador | `ruby tools/kos_doctor.rb [--arreglar] [--silencioso]` |
 | `kos_validate.rb` | Revisa estructura, estados, enlaces, secretos y datos | `ruby tools/kos_validate.rb` |
 | `kos_backup.rb` | Respaldo comprimido con verificación | `ruby tools/kos_backup.rb` y `--verify <archivo>` |
 | `kos_privacy_check.rb` | Busca nombres o datos antes de compartir | `ruby tools/kos_privacy_check.rb --denylist mis-terminos.txt --historial` |

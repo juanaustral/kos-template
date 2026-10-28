@@ -14,4 +14,5 @@
 | 08 | [Privacidad y seguridad](08-privacidad-y-seguridad.md) | Qué no guardar y qué nunca delegar. |
 | 09 | [Personalizar](09-personalizar.md) | Listas, módulos, recetas y reglas propias. |
 | 10 | [Problemas frecuentes](10-problemas-frecuentes.md) | Soluciones rápidas. |
+| 11 | [Varias IAs a la vez](11-varias-ias.md) | Que no se pisen: escritura, sincronización y chequeo. |
 | — | [Glosario](glosario.md) | Las palabras de KOS. |

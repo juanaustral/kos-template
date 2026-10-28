@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.0 — 2026-10-28
+- New: several AIs at once without overwriting each other. `tools/kos_write.rb` is the single write gate (lock, commits only its own change with the AI as author, validates first, clash-free decision numbers, work claims and Wrap-up). Manual: `docs/manual/11-several-ais.md`.
+- New: `tools/kos_sync.rb` (the only pull/push with GitHub, for cron) and `tools/kos_doctor.rb` (stuck locks, forgotten changes, sync, decision index, validator; `--arreglar`).
+- Backups include the full Git history (`kos-historial.bundle`) and verification checks it.
+- The validator also detects AWS, Slack and Google keys.
+- AI-guided installation for people who don't use the terminal (quickstart).
+
 ## 1.3.0 — 2026-10-28
 - New: `ruby tools/kos_update.rb --from <zip or folder>` updates KOS to a new version. It replaces only the engine (rules, tools, manual, templates, modules, adapters), never your data. `--dry-run` shows the plan without touching anything.
 - Engine files you edited are respected: the new version is saved next to them as `.kos-new` and the validator warns.

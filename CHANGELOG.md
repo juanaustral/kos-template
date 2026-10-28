@@ -1,5 +1,12 @@
 # Cambios
 
+## 1.4.0 — 2026-10-28
+- Nuevo: varias IAs a la vez sin pisarse. `tools/kos_write.rb` es la puerta única de escritura (candado, commit solo del propio cambio con la IA como autor, validación previa, números de decisión sin choques, reclamos de trabajo y Cierre). Manual: `docs/manual/11-varias-ias.md`.
+- Nuevo: `tools/kos_sync.rb` (único pull/push con GitHub, para cron) y `tools/kos_doctor.rb` (candados trabados, cambios olvidados, sincronización, índice de decisiones, validador; `--arreglar`).
+- El respaldo incluye todo el historial de Git (`kos-historial.bundle`) y la verificación lo comprueba.
+- El validador detecta también claves de AWS, Slack y Google.
+- Instalación guiada por una IA para quien no usa la terminal (quickstart).
+
 ## 1.3.0 — 2026-10-28
 - Nuevo: `ruby tools/kos_update.rb --desde <zip o carpeta>` actualiza KOS a una versión nueva. Reemplaza solo el motor (reglas, herramientas, manual, moldes, módulos, adaptadores), nunca tus datos. Con `--simular` muestra el plan sin tocar nada.
 - Si editaste un archivo del motor, se respeta: la versión nueva queda al lado como `.kos-new` y el validador avisa.

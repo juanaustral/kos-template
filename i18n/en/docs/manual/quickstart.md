@@ -1,5 +1,7 @@
 # KOS in ten minutes
 
+> **Not comfortable with the terminal?** Open an AI that can use your computer (Claude Code, Codex, Cursor) in the KOS folder and ask it: *"Install KOS following docs/manual/quickstart.md. Ask me for my details before running kos_init.rb and explain each step."* It installs Git and Ruby if they are missing.
+
 1. **Requirements**: Git and Ruby 3 installed ([how](01-installation.md)). Check with `git --version` and `ruby -v`.
 2. **Copy the template** into a folder of your own, e.g. `~/kos`. If you received it on GitHub, use "Use this template" and create a **private** repository.
 3. **Open a terminal in that folder** and run:

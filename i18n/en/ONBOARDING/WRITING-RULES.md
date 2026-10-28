@@ -3,7 +3,10 @@
 Status: current.
 
 ## How to write
-- Before writing: update (`git pull`) if you work on a copy. One change per commit, with a clear message. Never store secrets.
+- For tasks, inbox, decisions and lists use the single write gate: `ruby tools/kos_write.rb --agente <your-name> <operation>` (see `--ayuda`). It writes one at a time even when other AIs are working, commits only your change under your name and validates first.
+- If you edit by hand: never `git add -A` or `git commit -a` (you would sweep up another AI's half-done work). Commit only your paths. One change per commit, with a clear message. Never store secrets.
+- If you work on a copy on another machine: `git pull` before writing. In a folder shared by several AIs, `tools/kos_sync.rb` does the pull and push.
+- Long work on a project: announce it with `kos_write.rb tomar --proyecto <id>` and check `reclamos` before starting.
 - New captures and ideas: `knowledge/inbox/YYYY-MM-DD-topic.md`.
 - Lists: edit the file in `knowledge/lists/` respecting its columns. Do not overwrite {{OWNER_NAME}}'s notes, ratings or statuses. Do not delete rows.
 - Do not replace a document silently: if something changes, keep the previous version as history.

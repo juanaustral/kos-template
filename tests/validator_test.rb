@@ -245,14 +245,31 @@ with_copy("actualizar") do |kos|
   end
 end
 
-# 13. Respaldo y restauración.
+# 13. Varios agentes a la vez (kos_write.rb), instalado en español y en inglés.
+[[], ["--lang", "en"]].each do |extra|
+  with_copy("multiagente#{extra.last}") do |copy|
+    init(copy, *extra)
+    run("git", "-C", copy.to_s, "-c", "user.name=t", "-c", "user.email=t@t", "add", "-A")
+    run("git", "-C", copy.to_s, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "instalado")
+    out, st = run({ "KOS_TEST_SRC" => copy.to_s }, "ruby", copy.join("tests/kos_write_test.rb").to_s)
+    check(st.success?, "kos_write_test (#{extra.last || "es"}) falló:\n#{out}")
+    dout, = run("ruby", copy.join("tools/kos_doctor.rb").to_s)
+    check(!dout.include?("decisions/index.md no tiene fila"), "kos_doctor (#{extra.last || "es"}) ve el índice de decisiones mal:\n#{dout}")
+  end
+end
+
+# 14. Respaldo y restauración.
 with_copy("backup") do |copy|
+  run("git", "-C", copy.to_s, "init", "-q")
+  run("git", "-C", copy.to_s, "-c", "user.name=t", "-c", "user.email=t@t", "add", "-A")
+  run("git", "-C", copy.to_s, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "base")
   out, st = run("ruby", copy.join("tools/kos_backup.rb").to_s, copy.to_s)
   bundle = out[/Respaldo: (\S+)/, 1]
   check(st.success? && bundle, "no se creó el respaldo:\n#{out}")
   if bundle
     vout, vst = run("ruby", copy.join("tools/kos_backup.rb").to_s, "--verify", bundle)
     check(vst.success? && vout.include?("RESTAURACIÓN OK"), "el respaldo no se verificó:\n#{vout}")
+    check(vout.include?("Historial de Git: OK"), "el respaldo no guardó el historial de Git:\n#{vout}")
   end
 end
 

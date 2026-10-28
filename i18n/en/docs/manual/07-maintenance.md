@@ -29,6 +29,6 @@ Rule of thumb: if it doesn't help decide or act soon, it goes to the archive or 
 4. Commit and push.
 
 ## Updating the template
-When you receive a new KOS version, read its `CHANGELOG.md`. Improvements usually live in `ONBOARDING/`, `tools/` and `docs/`: copy those over yours (never `knowledge/`, `projects/` or `decisions/`, which are your data) and run the validator.
+When you receive a new KOS version, read its `CHANGELOG.md`. Improvements usually live in `ONBOARDING/`, `tools/` and `docs/`: copy those over yours (never `knowledge/`, `projects/`, `decisions/` or `kos.yaml`, which are your data). Then run `ruby tools/kos_init.rb --refill`: it puts your name and form of address back into the new files, restores your modules' recipes and runs the validator. If you had edited any `ONBOARDING/` file by hand, check `git diff` before committing.
 
 Next: [Privacy and security](08-privacy-and-security.md).

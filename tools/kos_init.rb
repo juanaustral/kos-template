@@ -9,6 +9,7 @@ ARGV.map! { |a| a.dup.force_encoding(Encoding::UTF_8) }
 # Sin preguntas:     ruby tools/kos_init.rb --si --nombre "Ana" --trato tú \
 #                      --areas "Trabajo,Salud" --modulos listas,finanzas --ias claude-code,cursor
 # Agregar un módulo: ruby tools/kos_init.rb --solo-modulo listas
+# Tras actualizar:   ruby tools/kos_init.rb --rellenar   (completa marcadores con los datos de kos.yaml)
 # In English:        ruby tools/kos_init.rb --lang en   (module: --only-module lists)
 # Ver opciones:      ruby tools/kos_init.rb --ayuda
 
@@ -55,6 +56,7 @@ OptionParser.new do |o|
   o.on("--si", "No preguntar; usar opciones y valores por defecto") { opts[:si] = true }
   o.on("--solo-modulo NOMBRE", "--only-module NAME", "Instalar solo un módulo en un KOS ya instalado") { |v| opts[:solo_modulo] = v }
   o.on("--lang IDIOMA", "es (por defecto) o en (English)") { |v| opts[:lang] = v }
+  o.on("--rellenar", "--refill", "Completar marcadores {{...}} con los datos de kos.yaml (después de actualizar)") { opts[:rellenar] = true }
   o.on("--forzar", "Volver a correr aunque ya esté instalado") { opts[:forzar] = true }
   o.on("--ayuda", "Mostrar esta ayuda") { puts o; exit }
 end.parse!
@@ -103,6 +105,8 @@ def ask(question, default, opts)
   print "#{question} [#{default}]: "
   answer = $stdin.gets.to_s.strip
   answer.empty? ? default : answer
+rescue Interrupt
+  abort "\nCancelado: no se cambió nada. / Cancelled: nothing was changed."
 end
 
 def list(value) = value.to_s.split(",").map(&:strip).reject(&:empty?)
@@ -118,19 +122,26 @@ def text_files(dir)
   end
 end
 
-def fill(text, values)
-  values.reduce(text) { |t, (k, v)| t.gsub("{{#{k}}}", v.to_s) }
+# En YAML (y el encabezado de .mdc) los marcadores van entre comillas dobles: se escapan \ y ".
+YAML_EXT = %w[.yaml .yml .mdc].freeze
+
+def fill(text, values, ext = ".md")
+  values.reduce(text) do |t, (k, v)|
+    v = v.to_s.gsub(/[\r\n]+/, " ").strip
+    v = v.gsub("\\") { "\\\\" }.gsub('"') { '\\"' } if YAML_EXT.include?(ext)
+    t.gsub("{{#{k}}}") { v }
+  end
 end
 
 def fill_file(path, values)
   text = File.read(path, encoding: "utf-8")
-  filled = fill(text, values)
+  filled = fill(text, values, File.extname(path))
   File.write(path, filled) if filled != text
 end
 
 def copy_filled(src, dest, values)
   FileUtils.mkdir_p(File.dirname(dest))
-  File.write(dest, fill(File.read(src, encoding: "utf-8"), values))
+  File.write(dest, fill(File.read(src, encoding: "utf-8"), values, File.extname(src.to_s)))
 end
 
 # Inserta una fila al final de la primera tabla Markdown del archivo.
@@ -211,34 +222,52 @@ def install_adapter(ia)
   end
 end
 
+# El validador corre antes de cada commit (se saltea con git commit --no-verify).
+def install_hook
+  hook = ROOT.join(".git/hooks/pre-commit")
+  return if !ROOT.join(".git").directory? || hook.exist?
+  FileUtils.mkdir_p(hook.dirname)
+  File.write(hook, "#!/bin/sh\n# KOS: valida antes de cada commit.\nexec ruby tools/kos_validate.rb\n")
+  File.chmod(0o755, hook)
+  say "  validador antes de cada commit (.git/hooks/pre-commit) ✓"
+end
+
 config_path = ROOT.join("kos.yaml")
 config = YAML.load_file(config_path.to_s) || {}
+installed = config["instalado"] == true || config["installed"] == true
 
-# --- Solo un módulo ---
-if opts[:solo_modulo]
-  installed = config["instalado"] == true || config["installed"] == true
+# --- Solo un módulo, o rellenar marcadores tras actualizar ---
+if opts[:solo_modulo] || opts[:rellenar]
   abort "Primero instala KOS / install KOS first: ruby tools/kos_init.rb" unless installed
   lang = config["lang"] == "en" ? "en" : "es"
   dueno = config["dueno"] || config["owner"] || {}
   values = { "OWNER_NAME" => dueno["nombre"] || dueno["name"], "IDIOMA" => dueno["idioma"] || dueno["language"],
              "TRATO" => dueno["trato"] || dueno["address"], "ESTILO" => dueno["estilo"] || dueno["style"],
              "FECHA_INSTALACION" => Date.today.iso8601 }
-  install_module(lang, opts[:solo_modulo], values)
+  if opts[:rellenar]
+    text_files(ROOT).each { |p| fill_file(p, values) }
+    (config["modulos"] || config["modules"] || {}).select { |_k, on| on == true }.each_key do |key|
+      kind = MODULE_ALIASES[key] or next
+      append_recipes(lang, LANGS[lang][kind][:key], values)
+    end
+    (config["ias"] || config["ais"] || []).each { |ia| install_adapter(ia.to_s) if IAS.include?(ia.to_s) }
+    install_hook
+    say "  marcadores completados / placeholders filled ✓"
+  else
+    install_module(lang, opts[:solo_modulo], values)
+  end
   exit(system("ruby", ROOT.join("tools/kos_validate.rb").to_s, ROOT.to_s) ? 0 : 1)
 end
 
-if (config["instalado"] == true || config["installed"] == true) && !opts[:forzar]
-  abort "KOS ya está instalado / already installed. Módulo: --solo-modulo <nombre>. Repetir: --forzar."
+if installed && !opts[:forzar]
+  abort "KOS ya está instalado / already installed. Módulo: --solo-modulo <nombre>. Tras actualizar: --rellenar. Repetir: --forzar."
 end
 
 lang = opts[:lang].to_s.downcase.start_with?("en") ? "en" : "es"
 abort "Idioma no disponible / language not available: #{opts[:lang]} (es, en)" if opts[:lang] && !%w[es en english español].include?(opts[:lang].downcase)
-apply_locale(lang) if lang != "es"
-FileUtils.rm_rf(ROOT.join("i18n"))
-FileUtils.rm_f(ROOT.join("README.en.md"))
-readme = ROOT.join("README.md")
-File.write(readme, readme.read.lines.reject { |l| l.include?("README.en.md") }.join.sub(/\A(# .*\n)\n\n/, "\\1\n"))
-config = YAML.load_file(config_path.to_s) || {}
+if lang != "es" && !ROOT.join("i18n", lang).directory?
+  abort "Falta i18n/#{lang}/: este KOS ya se instaló en otro idioma. / i18n/#{lang}/ is missing: this KOS was already set up in another language. Start again from a fresh copy."
+end
 t = TEXTS[lang]
 d = t[:defaults]
 
@@ -250,8 +279,18 @@ estilo = ask(t[:estilo], opts[:estilo] || d[3], opts)
 areas = list(ask(t[:areas], opts[:areas] || d[4], opts))
 modulos = list(ask(t[:modulos], opts[:modulos] || "", opts))
 ias = list(ask("#{t[:ias]} (#{IAS.join(", ")})", opts[:ias] || "", opts))
-(modulos - MODULES).each { |m| abort "Módulo desconocido: #{m}" }
-(ias - IAS).each { |i| abort "IA desconocida: #{i}" }
+(modulos - MODULES).each { |m| abort "Módulo desconocido / unknown module: #{m}. No se cambió nada / nothing was changed." }
+(ias - IAS).each { |i| abort "IA desconocida / unknown AI: #{i}. No se cambió nada / nothing was changed." }
+skipped = areas.select { |a| slug(a).empty? }
+skipped.each { |a| say "  área ignorada / area skipped: #{a}" }
+areas -= skipped
+
+# Recién ahora se modifican archivos: un error o Ctrl-C en las preguntas no deja nada a medias.
+apply_locale(lang) if lang != "es"
+FileUtils.rm_rf(ROOT.join("i18n"))
+FileUtils.rm_f(ROOT.join("README.en.md"))
+readme = ROOT.join("README.md")
+File.write(readme, readme.read.lines.reject { |l| l.include?("README.en.md") }.join.sub(/\A(# .*\n)\n\n/, "\\1\n"))
 
 values = { "OWNER_NAME" => nombre, "IDIOMA" => idioma, "TRATO" => trato, "ESTILO" => estilo,
            "FECHA_INSTALACION" => Date.today.iso8601 }
@@ -279,6 +318,7 @@ File.write(config_path, config_text)
 unless ROOT.join(".git").exist?
   system("git", "init", "-q", "-b", "main", ROOT.to_s) && say("  repositorio Git creado")
 end
+install_hook
 
 say "\n..."
 ok = system("ruby", ROOT.join("tools/kos_validate.rb").to_s, ROOT.to_s)

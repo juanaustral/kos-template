@@ -9,7 +9,9 @@ Validator and wizard messages are in Spanish; the codes in brackets are the same
 | `ERROR [estado-incongruente]` or `[index-incongruente]` | A project has different statuses in registry, index and brief. Ask: *"Fix project X's status in all three places."* |
 | `ERROR [project-unregistered]` | There's a folder in `projects/` that isn't in `registry/projects.yaml`. Register or move it. |
 | `ERROR [link-broken]` | A link points to a file that doesn't exist. Fix the path or remove the link. |
-| `ERROR [list-rows-dropped]` | Rows were deleted from a list. If by mistake: `git checkout -- knowledge/lists/<file>`. If on purpose: `KOS_ALLOW_ROW_DROP=1 ruby tools/kos_validate.rb` and commit. |
+| `ERROR [list-rows-dropped]` | Rows were deleted from a list. If by mistake: `git checkout -- knowledge/lists/<file>`. If on purpose: `KOS_ALLOW_ROW_DROP=1 git commit ...` and put `[allow-row-drop]` in the commit message (so GitHub won't fail either). |
+| A commit is stopped by validator errors | Since setup, the validator runs before every commit. Fix what it reports. Only in an emergency: `git commit --no-verify`. |
+| `placeholder-pendiente` appears after an update | Run `ruby tools/kos_init.rb --refill`. |
 | `ERROR [possible-secret-…]` | Something looks like a key. Remove it from the file and, if it reached Git, rotate that key in its service. |
 | `ERROR [placeholder-pendiente]` | A `{{…}}` was left unfilled. Replace it by hand. |
 | The AI doesn't follow the rules | Ask it to reread `AGENTS.md`. If it's a chat, check that the text from `adapters/paste-into-any-ai.md` is in the instructions. |

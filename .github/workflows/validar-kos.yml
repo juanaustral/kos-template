@@ -15,5 +15,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
+      # Compara las listas contra el estado anterior al push (detecta filas borradas ya commiteadas).
       - run: ruby tools/kos_validate.rb
+        env:
+          KOS_BASE: ${{ github.event.before }}

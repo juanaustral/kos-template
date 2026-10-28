@@ -1,5 +1,13 @@
 # Cambios
 
+## 1.2.0 — 2026-10-28
+- Arreglo: un nombre o estilo con comillas o barras ya no rompe `kos.yaml` ni los manifiestos.
+- Arreglo: el asistente no toca ningún archivo hasta terminar las preguntas; un error o Ctrl-C no deja la instalación a medias.
+- Arreglo: el chequeo de filas de listas también funciona en GitHub (compara contra el estado anterior al push). Para borrar a propósito: `[permitir-borrar-filas]` en el mensaje del commit.
+- Nuevo: el validador corre antes de cada commit (hook `pre-commit` que instala el asistente).
+- Nuevo: `ruby tools/kos_init.rb --rellenar` completa tus datos en los archivos de una versión nueva y repone las recetas de módulos.
+- Pruebas para los cuatro casos.
+
 ## 1.1.0 — 2026-10-28
 - Versión completa en inglés: `ruby tools/kos_init.rb --lang en` (reglas, recetas, adaptadores, módulos y manual).
 - El asistente acepta `--only-module` y nombres de módulo en inglés (`lists`, `finance`).

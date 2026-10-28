@@ -10,6 +10,7 @@ require "yaml"
 require "date"
 require "pathname"
 require "csv"
+require "open3"
 
 ROOT = Pathname.new(ARGV[0] || ".").expand_path
 errors = []
@@ -210,11 +211,19 @@ end
   end
 end
 
-# --- Listas: no se pierden filas respecto del último commit (salvo KOS_ALLOW_ROW_DROP=1) ---
-if rows_check && ENV["KOS_ALLOW_ROW_DROP"] != "1" && ROOT.join(".git").exist?
+# --- Listas: no se pierden filas respecto de una base (salvo KOS_ALLOW_ROW_DROP=1) ---
+# Base: HEAD (cambios sin commitear) o KOS_BASE (en CI, el commit anterior al push).
+# Un commit con [permitir-borrar-filas] o [allow-row-drop] en el mensaje autoriza el borrado.
+git = ->(*args) { Open3.capture2e("git", "-C", ROOT.to_s, *args) }
+row_base = ENV["KOS_BASE"].to_s
+row_base = "HEAD" if row_base.empty? || row_base.match?(/\A0+\z/) || !git.("cat-file", "-e", "#{row_base}^{commit}")[1].success?
+row_drop_allowed = row_base != "HEAD" && git.("log", "--format=%B", "#{row_base}..HEAD")[0].match?(/\[(permitir-borrar-filas|allow-row-drop)\]/)
+if rows_check && ENV["KOS_ALLOW_ROW_DROP"] != "1" && !row_drop_allowed && ROOT.join(".git").exist?
   files_in("knowledge/lists/*.md").each do |file|
     rel = relative(file)
-    old = `git -C "#{ROOT}" show HEAD:"#{rel}" 2>/dev/null`.force_encoding(Encoding::UTF_8)
+    old, st = git.("show", "#{row_base}:#{rel}")
+    next unless st.success?
+    old = old.force_encoding(Encoding::UTF_8)
     next if old.empty?
     before = old.lines.count { |l| l.start_with?("|") }
     after = file.read.lines.count { |l| l.start_with?("|") }

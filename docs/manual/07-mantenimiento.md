@@ -29,6 +29,6 @@ Criterio: si no sirve para decidir o actuar pronto, va al archivo o al historial
 4. Commit y push.
 
 ## Actualizar la plantilla
-Si recibes una versión nueva de KOS, lee su `CHANGELOG.md`. Las mejoras suelen estar en `ONBOARDING/`, `tools/` y `docs/`: copia esos archivos sobre los tuyos (nunca `knowledge/`, `projects/` ni `decisions/`, que son tus datos) y corre el validador.
+Si recibes una versión nueva de KOS, lee su `CHANGELOG.md`. Las mejoras suelen estar en `ONBOARDING/`, `tools/` y `docs/`: copia esos archivos sobre los tuyos (nunca `knowledge/`, `projects/`, `decisions/` ni `kos.yaml`, que son tus datos). Después corre `ruby tools/kos_init.rb --rellenar`: vuelve a poner tu nombre y tu trato en los archivos nuevos, repone las recetas de tus módulos y corre el validador. Si habías editado a mano algún archivo de `ONBOARDING/`, revisa el diff con `git diff` antes del commit.
 
 Siguiente: [Privacidad y seguridad](08-privacidad-y-seguridad.md).

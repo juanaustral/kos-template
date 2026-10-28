@@ -13,7 +13,7 @@ require "pathname"
 ROOT = Pathname.new(ARGV[0] || File.join(__dir__, "..")).expand_path
 $failures = []
 
-def run(*cmd) = Open3.capture2e(*cmd)
+def run(*cmd, **kw) = Open3.capture2e(*cmd, **kw)
 def check(cond, message) = ($failures << message unless cond)
 
 def with_copy(name)
@@ -138,7 +138,59 @@ with_copy("en-modulo") do |copy|
   check(copy.join("kos.yaml").read.match?(/lists:\s*true/), "kos.yaml en inglés no marcó el módulo")
 end
 
-# 8. Respaldo y restauración.
+# 8. Nombres con comillas y barras no rompen el YAML.
+with_copy("comillas") do |copy|
+  out, st = run("ruby", copy.join("tools/kos_init.rb").to_s, "--si", "--nombre", 'Ana "La Jefa" \\ X', "--ias", "cursor", "--modulos", "finanzas")
+  check(st.success?, "nombre con comillas rompió la instalación:\n#{out}")
+  check(copy.join("kos.yaml").read.include?('nombre: "Ana \\"La Jefa\\" \\\\ X"'), "kos.yaml no escapó el nombre")
+  _, st2 = run("ruby", copy.join("tools/kos_init.rb").to_s, "--solo-modulo", "listas")
+  check(st2.success?, "--solo-modulo falló con nombre con comillas")
+end
+
+# 9. Filas borradas y ya commiteadas: las detecta comparando contra KOS_BASE (como en CI).
+with_copy("filas") do |copy|
+  init(copy, "--modulos", "listas")
+  check(copy.join(".git/hooks/pre-commit").executable?, "no se instaló el hook pre-commit")
+  g = ->(*a) { run("git", "-C", copy.to_s, "-c", "user.name=t", "-c", "user.email=t@t", *a) }
+  movies = copy.join("knowledge/lists/movies.md")
+  movies.write(movies.read + "| Película de prueba | 2010 |\n")
+  g.("add", "-A"); g.("commit", "-qm", "base")
+  base = g.("rev-parse", "HEAD")[0].strip
+  movies.write(movies.read.lines[0..-2].join)
+  _, hook = g.("commit", "-qam", "borra")
+  check(!hook.success?, "el hook pre-commit dejó commitear un borrado de filas")
+  g.("commit", "-qam", "borra", "--no-verify")
+  out, st = run({ "KOS_BASE" => base }, "ruby", copy.join("tools/kos_validate.rb").to_s, copy.to_s)
+  check(!st.success? && out.include?("list-rows-dropped"), "no detectó filas borradas ya commiteadas")
+  g.("commit", "-q", "--allow-empty", "--no-verify", "-m", "a propósito [permitir-borrar-filas]")
+  _, st2 = run({ "KOS_BASE" => base }, "ruby", copy.join("tools/kos_validate.rb").to_s, copy.to_s)
+  check(st2.success?, "[permitir-borrar-filas] no autorizó el borrado")
+end
+
+# 10. Un error en las preguntas no deja nada a medias.
+with_copy("atomica") do |copy|
+  _, st = init(copy, "--modulos", "inexistente")
+  check(!st.success?, "aceptó un módulo inexistente")
+  check(copy.join("i18n/en").directory? && copy.join("README.en.md").exist?, "la instalación fallida borró archivos")
+  out, st2 = init(copy, "--lang", "en")
+  check(st2.success? && copy.join("ONBOARDING/RECIPES.md").exist?, "después de un error no instaló en inglés:\n#{out}")
+end
+
+# 11. Tras actualizar (copiar ONBOARDING/ nuevo), --rellenar completa los marcadores y repone las recetas.
+with_copy("rellenar") do |copy|
+  pristine = Dir.mktmpdir("kos-onb-")
+  FileUtils.cp_r(copy.join("ONBOARDING"), pristine)
+  init(copy, "--modulos", "finanzas")
+  FileUtils.cp_r(Dir[File.join(pristine, "ONBOARDING", "*")], copy.join("ONBOARDING"))
+  vout, _ = validate(copy)
+  check(vout.include?("placeholder-pendiente"), "la copia de ONBOARDING no dejó marcadores (prueba mal armada)")
+  out, st = run("ruby", copy.join("tools/kos_init.rb").to_s, "--rellenar")
+  check(st.success?, "--rellenar falló:\n#{out}")
+  check(copy.join("ONBOARDING/RECETAS.md").read.include?("(módulo finanzas)"), "--rellenar no repuso recetas de finanzas")
+  FileUtils.rm_rf(pristine)
+end
+
+# 12. Respaldo y restauración.
 with_copy("backup") do |copy|
   out, st = run("ruby", copy.join("tools/kos_backup.rb").to_s, copy.to_s)
   bundle = out[/Respaldo: (\S+)/, 1]

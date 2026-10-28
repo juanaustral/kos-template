@@ -1,5 +1,9 @@
 # Cambios
 
+## 1.4.1 — 2026-10-28
+- Licencia: PolyForm Shield 1.0.0. Puedes usar KOS para lo que quieras (personal, trabajo, clientes) y modificarlo; no puedes venderlo ni ofrecerlo como producto propio, aunque sea gratis. `LICENSE.md` trae un resumen y el texto oficial.
+- `kos_write.rb` permite editar `.gitignore`; su prueba ignora `KOS_AGENTE` de la terminal; `kos_doctor.rb` no muestra avisos de Git sobre carpetas sin permiso de lectura.
+
 ## 1.4.0 — 2026-10-28
 - Nuevo: varias IAs a la vez sin pisarse. `tools/kos_write.rb` es la puerta única de escritura (candado, commit solo del propio cambio con la IA como autor, validación previa, números de decisión sin choques, reclamos de trabajo y Cierre). Manual: `docs/manual/11-varias-ias.md`.
 - Nuevo: `tools/kos_sync.rb` (único pull/push con GitHub, para cron) y `tools/kos_doctor.rb` (candados trabados, cambios olvidados, sincronización, índice de decisiones, validador; `--arreglar`).

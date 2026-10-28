@@ -29,4 +29,4 @@ One-page version: [`docs/manual/quickstart.md`](docs/manual/quickstart.md).
 ## Manual
 Start with [`docs/manual/00-what-is-kos.md`](docs/manual/00-what-is-kos.md). Full index in [`docs/manual/README.md`](docs/manual/README.md).
 
-Personal-use license: [`LICENSE.md`](LICENSE.md). Changes: [`CHANGELOG.md`](CHANGELOG.md).
+License: PolyForm Shield 1.0.0 (use it for anything; do not sell or redistribute it) — [`LICENSE.md`](LICENSE.md). Changes: [`CHANGELOG.md`](CHANGELOG.md).

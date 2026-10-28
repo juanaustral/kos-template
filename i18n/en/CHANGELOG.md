@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.1 — 2026-10-28
+- License: PolyForm Shield 1.0.0. You may use KOS for anything (personal, work, clients) and change it; you may not sell it or offer it as your own product, even for free. `LICENSE.md` has a summary and the official text.
+- `kos_write.rb` can edit `.gitignore`; its test ignores `KOS_AGENTE` from the shell; `kos_doctor.rb` hides Git warnings about unreadable folders.
+
 ## 1.4.0 — 2026-10-28
 - New: several AIs at once without overwriting each other. `tools/kos_write.rb` is the single write gate (lock, commits only its own change with the AI as author, validates first, clash-free decision numbers, work claims and Wrap-up). Manual: `docs/manual/11-several-ais.md`.
 - New: `tools/kos_sync.rb` (the only pull/push with GitHub, for cron) and `tools/kos_doctor.rb` (stuck locks, forgotten changes, sync, decision index, validator; `--arreglar`).

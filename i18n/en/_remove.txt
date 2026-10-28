@@ -12,3 +12,5 @@ adapters/pegar-en-una-ia.md
 modules/listas
 modules/finanzas
 docs/manual
+skills/skills-kos/CAMBIOS.md
+skills/skills-kos/evals/casos.md

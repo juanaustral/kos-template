@@ -23,6 +23,7 @@ One-page version: [`docs/manual/quickstart.md`](docs/manual/quickstart.md).
 | `templates/` | Starting points for new files. |
 | `adapters/` | How to connect each AI. |
 | `modules/` | Optional modules (lists, finance). |
+| `skills/` | Skills shared by all your AIs, approved by you ([manual](docs/manual/12-shared-skills.md)). |
 | `tools/`, `tests/` | Setup wizard, validator, backup and privacy check. |
 | `docs/manual/` | The manual, for you. |
 

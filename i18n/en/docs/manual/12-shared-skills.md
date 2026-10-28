@@ -5,37 +5,35 @@ A skill is a recipe an AI follows for a task (a folder with a `SKILL.md`, open a
 ## The idea
 - **One source.** No per-tool copies drifting apart.
 - **You approve.** AIs propose improvements; a person listed in `skills/config.yaml` approves them. If an approved skill changes without approval, the validator reports an error.
-- **Even quality.** Each skill has test cases (`evals/casos.md`). Before approving, test them on the AIs you use and record the result.
+- **Even quality.** Each skill has test cases (`evals/cases.md`). Before approving, test them on the AIs you use and record the result.
 
 ## Commands
-The tool's command names are in Spanish.
-
 | To | Command |
 |---|---|
-| See what is there | `ruby tools/kos_skills.rb estado` |
-| Start a skill or a change | `ruby tools/kos_skills.rb proponer <name>` |
-| Submit the proposal | `ruby tools/kos_skills.rb entregar <name> --agente <who> --motivo "..."` |
+| See what is there | `ruby tools/kos_skills.rb status` |
+| Start a skill or a change | `ruby tools/kos_skills.rb propose <name>` |
+| Submit the proposal | `ruby tools/kos_skills.rb submit <name> --agent <who> --reason "..."` |
 | See what changes | `ruby tools/kos_skills.rb diff <name>` |
-| Approve or reject | `ruby tools/kos_skills.rb aprobar <name> --por <person>` / `rechazar <name> --por <person> --motivo "..."` |
-| Bring in someone else's skill | `ruby tools/kos_skills.rb importar <folder> --fuente <url>` |
-| Link for Claude Code or Codex | `ruby tools/kos_skills.rb enlazar claude --destino .claude/skills` / `enlazar codex` |
+| Approve or reject | `ruby tools/kos_skills.rb approve <name> --by <person>` / `reject <name> --by <person> --reason "..."` |
+| Bring in someone else's skill | `ruby tools/kos_skills.rb import <folder> --source <url>` |
+| Link for Claude Code or Codex | `ruby tools/kos_skills.rb link claude --dest .claude/skills` / `link codex` |
 
 You do not have to type them: ask your AI ("propose a skill for...", "approve the proposal for..."). The `skills-kos` skill teaches it the process.
 
 ## Approvers
-The setup assistant puts your name in `skills/config.yaml` (key `aprobadores`). If two or more people share the KOS, add each one: any of them can approve.
+The setup assistant puts your name in `skills/config.yaml` (key `approvers`). If two or more people share the KOS, add each one: any of them can approve.
 
 ## Someone else's skills
-`importar` recognizes that a skill is someone else's (it does not say `origen: propia`, or it has a license or author), shows you author, license, scripts and risks, and asks:
+`import` recognizes that a skill is someone else's (it does not say `origin: own`, or it has a license or author), shows you author, license, scripts and risks, and asks:
 
 > This skill is someone else's. Do you want to import it as is, or adapt it to our system to avoid errors and problems?
 
-- **As is** (`--modo tal-cual`): exact copy, marked `origen: tercero`.
-- **Adapted** (`--modo adaptar`, recommended): a draft in KOS format, marked `origen: adaptada`. The original is kept aside for reference only.
+- **As is** (`--mode as-is`): exact copy, marked `origin: third-party`.
+- **Adapted** (`--mode adapt`, recommended): a draft in KOS format, marked `origin: adapted`. The original is kept aside for reference only.
 
 No license, no import: the skill belongs to its author. Skills from public registries can carry hidden instructions or harmful scripts; that is why they are read before approval.
 
 ## How each AI uses them
 - **Claude Code**: links in this KOS's `.claude/skills/`. The setup assistant creates them if you chose Claude Code.
-- **Codex**: `enlazar codex` creates links in `~/.agents/skills/`.
+- **Codex**: `link codex` creates links in `~/.agents/skills/`.
 - **Others**: read `skills/` directly; `AGENTS.md` tells them where it is.

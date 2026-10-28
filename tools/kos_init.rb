@@ -54,7 +54,7 @@ OptionParser.new do |o|
   o.on("--areas LISTA", "Áreas separadas por coma (ej.: Trabajo,Salud)") { |v| opts[:areas] = v }
   o.on("--modulos LISTA", "Módulos: #{MODULES.join(", ")}") { |v| opts[:modulos] = v }
   o.on("--ias LISTA", "IAs: #{IAS.join(", ")}") { |v| opts[:ias] = v }
-  o.on("--aprobadores LISTA", "Quién aprueba skills / skill approvers") { |v| opts[:aprobadores] = v }
+  o.on("--aprobadores LISTA", "--approvers LIST", "Quién aprueba skills / skill approvers") { |v| opts[:aprobadores] = v }
   o.on("--si", "No preguntar; usar opciones y valores por defecto") { opts[:si] = true }
   o.on("--solo-modulo NOMBRE", "--only-module NAME", "Instalar solo un módulo en un KOS ya instalado") { |v| opts[:solo_modulo] = v }
   o.on("--lang IDIOMA", "es (por defecto) o en (English)") { |v| opts[:lang] = v }
@@ -236,7 +236,7 @@ def set_approvers(names)
   ids = names.map { |n| slug(n) }.reject(&:empty?).uniq
   return if ids.empty?
   text = File.read(path, encoding: "utf-8")
-  File.write(path, text.sub(/^aprobadores:\n(?:  - .*\n)*/) { "aprobadores:\n" + ids.map { |id| "  - #{id}\n" }.join })
+  File.write(path, text.sub(/^(aprobadores|approvers):\n(?:  - .*\n)*/) { "#{$1}:\n" + ids.map { |id| "  - #{id}\n" }.join })
 end
 
 # El validador corre antes de cada commit (se saltea con git commit --no-verify).
@@ -270,7 +270,10 @@ if opts[:solo_modulo] || opts[:rellenar]
       end
       (config["ias"] || config["ais"] || []).each { |ia| install_adapter(ia.to_s) if IAS.include?(ia.to_s) }
       cfg = ROOT.join("skills/config.yaml") # al actualizar desde una versión sin skills, config.yaml no viene (son datos)
-      File.write(cfg, "aprobadores:\n  - \"{{APROBADOR}}\"\norigenes:\n  - propia\n  - adaptada\n  - tercero\n") if cfg.dirname.directory? && !cfg.file?
+      if cfg.dirname.directory? && !cfg.file?
+        File.write(cfg, lang == "en" ? "approvers:\n  - \"{{APROBADOR}}\"\norigins:\n  - own\n  - adapted\n  - third-party\n"
+                                     : "aprobadores:\n  - \"{{APROBADOR}}\"\norigenes:\n  - propia\n  - adaptada\n  - tercero\n")
+      end
       set_approvers([values["OWNER_NAME"].to_s]) if cfg.file? && cfg.read.include?("{{APROBADOR}}")
       install_hook
       say "  marcadores completados / placeholders filled ✓"

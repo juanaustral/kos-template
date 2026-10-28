@@ -96,6 +96,23 @@ with_copy("importar") do |copy, tmp|
   check(copy.join("skills/_propuestas/ajena/SKILL.md").read.include?("origen: adaptada"), "adaptar no marca origen: adaptada")
 end
 
+# 5. En inglés: comandos, archivos y mensajes en inglés.
+with_copy("ingles") do |copy, _|
+  init(copy, "--lang", "en", "--approvers", "Ann")
+  git_base(copy)
+  check(copy.join("skills/config.yaml").read.include?("approvers:\n  - ann\n"), "config.yaml en inglés no tiene approvers")
+  out, st = skills(copy, "propose", "summary")
+  check(st.success? && copy.join("skills/_proposals/summary/evals/cases.md").file?, "propose en inglés no crea _proposals/summary con evals/cases.md:\n#{out}")
+  check(out.include?("Draft ready"), "los mensajes no salen en inglés:\n#{out}")
+  out, st = skills(copy, "submit", "summary", "--agent", "ai", "--reason", "test")
+  check(st.success? && copy.join("skills/_proposals/summary/PROPOSAL.md").file?, "submit en inglés falla:\n#{out}")
+  out, st = skills(copy, "approve", "summary", "--by", "ann")
+  check(st.success? && copy.join("skills/summary/CHANGES.md").read.include?("- seal: `"), "approve en inglés no deja CHANGES.md con seal:\n#{out}")
+  check(!copy.join("skills/skills-kos/CAMBIOS.md").exist?, "quedó CAMBIOS.md en español en un KOS en inglés")
+  out, st = validate(copy)
+  check(st.success?, "el KOS en inglés no valida después de aprobar:\n#{out}")
+end
+
 if $failures.empty?
   puts "OK — todas las pruebas de skills pasaron."
 else

@@ -38,4 +38,4 @@ Sin licencia no entra: la skill es de su autor. Las skills de registros público
 - **Codex**: `enlazar codex` crea enlaces en `~/.agents/skills/`.
 - **Otras**: leen `skills/` directamente; `AGENTS.md` les indica dónde está.
 
-Los comandos y mensajes de la herramienta están en español.
+En un KOS en inglés, la herramienta habla en inglés y usa nombres en inglés (`propose`, `approve`, `_proposals/`, `CHANGES.md`). Los comandos en español también funcionan siempre.

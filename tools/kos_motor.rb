@@ -17,6 +17,7 @@ module KosMotor
     ONBOARDING/**/* tools/**/* tests/**/* docs/**/* adapters/**/* templates/**/* modules/**/*
     .claude/skills/kos/**/* .cursor/rules/kos.mdc .github/workflows/**/*
     skills/README.md skills/skills-kos/SKILL.md skills/skills-kos/CAMBIOS.md skills/skills-kos/evals/casos.md
+    skills/skills-kos/CHANGES.md skills/skills-kos/evals/cases.md
   ].freeze
   LOCK = ".kos/lock.yaml"
   NEW_SUFFIX = ".kos-new"

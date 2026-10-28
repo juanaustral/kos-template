@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.0 — 2026-10-28
+- Shared skills in two languages: in an English KOS, `kos_skills.rb` speaks English and uses English commands and file names (`propose`, `submit`, `approve`, `_proposals/`, `CHANGES.md`, `evals/cases.md`, `approvers`). Spanish commands and options keep working in either language.
+- README (GitHub) and installed README with the shared skills section, in Spanish and English. The instructions for an AI cover using skills and asking who approves them.
+- `kos_init.rb` accepts `--approvers` as well as `--aprobadores`.
+
 ## 1.5.0 — 2026-10-28
 - New: shared skills. Skills (`SKILL.md`, open agentskills.io format) live in `skills/` and all your AIs use them. AIs propose changes and a person listed in `skills/config.yaml` approves them; the validator reports an error if an approved skill changes without approval. Tool: `tools/kos_skills.rb`. Manual: `docs/manual/12-shared-skills.md`.
 - `importar` brings in other people's skills: it warns that they are someone else's, shows author, license and risks, and asks whether they go in as is or adapted. No license, no import.

@@ -1,5 +1,9 @@
 # Cambios
 
+## 1.4.4 — 2026-10-28
+- README bilingüe (español e inglés): cómo funciona, requisitos previos, instrucciones para que una IA instale y use KOS, conexión por IA y herramienta, autoría y licencia.
+- Tres imágenes en `docs/img/` (portada, flujo y zonas).
+
 ## 1.4.3 — 2026-10-28
 - CHANGELOG sin nombres propios (el titular figura solo en `LICENSE.md`).
 

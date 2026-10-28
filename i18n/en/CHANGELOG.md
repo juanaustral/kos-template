@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.4 — 2026-10-28
+- Bilingual README (Spanish and English): how it works, prerequisites, instructions for an AI to install and use KOS, connection per AI and tool, authorship and license.
+- Three images in `docs/img/` (cover, flow and zones).
+
 ## 1.4.3 — 2026-10-28
 - CHANGELOG without personal names (the licensor appears only in `LICENSE.md`).
 

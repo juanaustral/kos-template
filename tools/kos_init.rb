@@ -18,6 +18,7 @@ require "pathname"
 require "fileutils"
 require "date"
 require "yaml"
+require_relative "kos_motor"
 
 ROOT = Pathname.new(__dir__).join("..").expand_path
 # Módulos por idioma: clave => archivos y textos que instala.
@@ -244,17 +245,19 @@ if opts[:solo_modulo] || opts[:rellenar]
   values = { "OWNER_NAME" => dueno["nombre"] || dueno["name"], "IDIOMA" => dueno["idioma"] || dueno["language"],
              "TRATO" => dueno["trato"] || dueno["address"], "ESTILO" => dueno["estilo"] || dueno["style"],
              "FECHA_INSTALACION" => Date.today.iso8601 }
-  if opts[:rellenar]
-    text_files(ROOT).each { |p| fill_file(p, values) }
-    (config["modulos"] || config["modules"] || {}).select { |_k, on| on == true }.each_key do |key|
-      kind = MODULE_ALIASES[key] or next
-      append_recipes(lang, LANGS[lang][kind][:key], values)
+  KosMotor.preserving_lock(ROOT) do
+    if opts[:rellenar]
+      text_files(ROOT).each { |p| fill_file(p, values) }
+      (config["modulos"] || config["modules"] || {}).select { |_k, on| on == true }.each_key do |key|
+        kind = MODULE_ALIASES[key] or next
+        append_recipes(lang, LANGS[lang][kind][:key], values)
+      end
+      (config["ias"] || config["ais"] || []).each { |ia| install_adapter(ia.to_s) if IAS.include?(ia.to_s) }
+      install_hook
+      say "  marcadores completados / placeholders filled ✓"
+    else
+      install_module(lang, opts[:solo_modulo], values)
     end
-    (config["ias"] || config["ais"] || []).each { |ia| install_adapter(ia.to_s) if IAS.include?(ia.to_s) }
-    install_hook
-    say "  marcadores completados / placeholders filled ✓"
-  else
-    install_module(lang, opts[:solo_modulo], values)
   end
   exit(system("ruby", ROOT.join("tools/kos_validate.rb").to_s, ROOT.to_s) ? 0 : 1)
 end
@@ -314,6 +317,7 @@ config_text = File.read(config_path, encoding: "utf-8")
                   .sub(/^(instalado|installed): false/, '\1: true')
                   .sub(/^(ias|ais): \[\]/, "\\1: [#{ias.join(", ")}]")
 File.write(config_path, config_text)
+KosMotor.write_lock(ROOT, KosMotor.current_hashes(ROOT), KosMotor.version(ROOT))
 
 unless ROOT.join(".git").exist?
   system("git", "init", "-q", "-b", "main", ROOT.to_s) && say("  repositorio Git creado")

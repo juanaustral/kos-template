@@ -231,6 +231,11 @@ if rows_check && ENV["KOS_ALLOW_ROW_DROP"] != "1" && !row_drop_allowed && ROOT.j
   end
 end
 
+# --- Actualización: conflictos pendientes (archivos .kos-new) ---
+Dir.glob(ROOT.join("**/*.kos-new").to_s, File::FNM_DOTMATCH).each do |p|
+  add(warnings, "update-conflict", Pathname.new(p), "Versión nueva sin revisar: compárala con el archivo original y bórrala")
+end
+
 # --- Instalación: no quedan marcadores {{...}} sin completar ---
 if installed
   files_in(["AGENTS.md", "CLAUDE.md", "GEMINI.md", "kos.yaml", "{ONBOARDING,knowledge,decisions,projects,.claude,.cursor}/**/*"]).each do |file|

@@ -28,7 +28,19 @@ Rule of thumb: if it doesn't help decide or act soon, it goes to the archive or 
 3. *"Review the inbox."*
 4. Commit and push.
 
-## Updating the template
-When you receive a new KOS version, read its `CHANGELOG.md`. Improvements usually live in `ONBOARDING/`, `tools/` and `docs/`: copy those over yours (never `knowledge/`, `projects/`, `decisions/` or `kos.yaml`, which are your data). Then run `ruby tools/kos_init.rb --refill`: it puts your name and form of address back into the new files, restores your modules' recipes and runs the validator. If you had edited any `ONBOARDING/` file by hand, check `git diff` before committing.
+## Updating KOS
+When you receive a new version (ZIP or folder):
+
+1. Save your state: `git add -A && git commit -m "before update"`.
+2. See what would change, touching nothing: `ruby tools/kos_update.rb --from ~/Downloads/kos-vX.Y.Z.zip --dry-run`.
+3. Update: the same command without `--dry-run`.
+
+What it does: it replaces only the **engine** (rules, tools, manual, templates, modules and adapters) and fills it in with your name, form of address, modules and AIs from `kos.yaml`. **It never touches your data**: `knowledge/`, `projects/`, `decisions/`, `registry/` or your values in `kos.yaml`. If a new version changes the shape of your data, it ships a migration that runs on its own.
+
+If you edited an engine file by hand (for example `AGENTS.md`), yours stays and the new version is saved next to it as `AGENTS.md.kos-new`. Compare them, keep what you want and delete the `.kos-new` (the validator warns you while it exists).
+
+Finally: review with `git diff` and save with `git add -A && git commit -m "KOS X.Y.Z"`. To undo: `git reset --hard && git clean -fd`.
+
+If your KOS predates 1.3.0, the first time add `--overwrite` and use the new version's updater: `ruby <new-folder>/tools/kos_update.rb --from <new-folder> --root . --overwrite`.
 
 Next: [Privacy and security](08-privacy-and-security.md).

@@ -28,7 +28,19 @@ Criterio: si no sirve para decidir o actuar pronto, va al archivo o al historial
 3. *"Revisa el inbox."*
 4. Commit y push.
 
-## Actualizar la plantilla
-Si recibes una versión nueva de KOS, lee su `CHANGELOG.md`. Las mejoras suelen estar en `ONBOARDING/`, `tools/` y `docs/`: copia esos archivos sobre los tuyos (nunca `knowledge/`, `projects/`, `decisions/` ni `kos.yaml`, que son tus datos). Después corre `ruby tools/kos_init.rb --rellenar`: vuelve a poner tu nombre y tu trato en los archivos nuevos, repone las recetas de tus módulos y corre el validador. Si habías editado a mano algún archivo de `ONBOARDING/`, revisa el diff con `git diff` antes del commit.
+## Actualizar KOS
+Cuando recibas una versión nueva (ZIP o carpeta):
+
+1. Guarda tu estado: `git add -A && git commit -m "antes de actualizar"`.
+2. Mira qué cambiaría, sin tocar nada: `ruby tools/kos_update.rb --desde ~/Descargas/kos-vX.Y.Z.zip --simular`.
+3. Actualiza: el mismo comando sin `--simular`.
+
+Qué hace: reemplaza solo el **motor** (reglas, herramientas, manual, moldes, módulos y adaptadores) y lo completa con tu nombre, trato, módulos e IAs de `kos.yaml`. **Nunca toca tus datos**: `knowledge/`, `projects/`, `decisions/`, `registry/` ni tus valores de `kos.yaml`. Si una versión nueva cambia la forma de los datos, trae una migración que corre sola.
+
+Si editaste a mano un archivo del motor (por ejemplo `AGENTS.md`), se queda el tuyo y la versión nueva queda al lado como `AGENTS.md.kos-new`. Compáralos, quédate con lo que quieras y borra el `.kos-new` (el validador te avisa mientras exista).
+
+Al final: revisa con `git diff` y guarda con `git add -A && git commit -m "KOS X.Y.Z"`. Para deshacer: `git reset --hard && git clean -fd`.
+
+Si tu KOS es anterior a la 1.3.0, la primera vez agrega `--sobrescribir` y usa el actualizador de la versión nueva: `ruby <carpeta-nueva>/tools/kos_update.rb --desde <carpeta-nueva> --kos . --sobrescribir`.
 
 Siguiente: [Privacidad y seguridad](08-privacidad-y-seguridad.md).

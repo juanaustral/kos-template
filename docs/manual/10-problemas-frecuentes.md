@@ -10,6 +10,8 @@
 | `ERROR [list-rows-dropped]` | Se borraron filas de una lista. Si fue un error: `git checkout -- knowledge/lists/<archivo>`. Si fue a propósito: `KOS_ALLOW_ROW_DROP=1 git commit ...` y pon `[permitir-borrar-filas]` en el mensaje del commit (así tampoco falla GitHub). |
 | Un commit se frena con errores del validador | Desde la instalación, el validador corre antes de cada commit. Corrige lo que indica. Solo en una emergencia: `git commit --no-verify`. |
 | Después de actualizar aparecen `placeholder-pendiente` | Corre `ruby tools/kos_init.rb --rellenar`. |
+| `AVISO [update-conflict]` | Quedó un `.kos-new` de una actualización: compáralo con el original, quédate con lo que quieras y bórralo. |
+| El actualizador dice "anterior a 1.3.0" | Corre el actualizador de la versión nueva con `--sobrescribir` (ver [Mantenimiento](07-mantenimiento.md)). |
 | `ERROR [possible-secret-…]` | Hay algo que parece una clave. Bórralo del archivo y, si llegó a Git, cambia esa clave en su servicio. |
 | `ERROR [placeholder-pendiente]` | Quedó un `{{…}}` sin completar. Reemplázalo a mano. |
 | La IA no sigue las reglas | Pídele que lea `AGENTS.md` de nuevo. Si es un chat, verifica que el texto de `adapters/pegar-en-una-ia.md` esté en las instrucciones. |

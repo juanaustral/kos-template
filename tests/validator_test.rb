@@ -105,6 +105,8 @@ with_copy("modulo") do |copy|
   out, st = run("ruby", copy.join("tools/kos_init.rb").to_s, "--solo-modulo", "listas")
   check(st.success? && copy.join("knowledge/lists/books.md").exist?, "--solo-modulo falló:\n#{out}")
   check(copy.join("kos.yaml").read.match?(/listas:\s*true/), "kos.yaml no marcó el módulo")
+  lout, _ = run("ruby", "-I", copy.join("tools").to_s, "-r", "kos_motor", "-e", "puts KosMotor.untouched(ARGV[0])", copy.to_s)
+  check(lout.include?("ONBOARDING/RECETAS.md"), "--solo-modulo dejó RECETAS.md como editado a mano en el lock")
   copy.join("knowledge/profile.md").write("# {{OWNER_NAME}}\n")
   vout, _ = validate(copy)
   check(vout.include?("placeholder-pendiente"), "no detectó marcadores sin completar")
@@ -190,7 +192,60 @@ with_copy("rellenar") do |copy|
   FileUtils.rm_rf(pristine)
 end
 
-# 12. Respaldo y restauración.
+# 12. Actualizar a una versión nueva: motor reemplazado, datos intactos, ediciones respetadas, migraciones.
+with_copy("actualizar") do |kos|
+  with_copy("version-nueva") do |nueva|
+    init(kos, "--modulos", "listas", "--ias", "claude-code")
+    g = ->(*a) { run("git", "-C", kos.to_s, "-c", "user.name=t", "-c", "user.email=t@t", *a) }
+    kos.join("AGENTS.md").write(kos.join("AGENTS.md").read + "\nMi regla propia.\n")
+    movies = kos.join("knowledge/lists/movies.md")
+    movies.write(movies.read + "| Película mía | 1999 |\n")
+    g.("add", "-A"); g.("commit", "-qm", "instalado")
+
+    onb = nueva.join("ONBOARDING/README.md")
+    onb.write(onb.read + "\nLínea nueva de la versión 9.9.9 para {{OWNER_NAME}}.\n")
+    nueva.join("AGENTS.md").write(nueva.join("AGENTS.md").read + "\nRegla nueva.\n")
+    nueva.join("docs/manual/extra.md").write("# Extra\n")
+    nueva.join("tools/migraciones/README.md").delete
+    nueva.join("tools/migraciones/002-prueba.rb").write("File.write(File.join(ARGV[0], \"knowledge/migrado.txt\"), \"ok\\n\")\n")
+    nueva.join("VERSION").write("9.9.9\n")
+    nueva.join("kos.yaml").write(nueva.join("kos.yaml").read.sub("schema_version: 1", "schema_version: 2"))
+    upd = nueva.join("tools/kos_update.rb")
+    upd.write(upd.read.sub("require_relative \"kos_motor\"\n", "require_relative \"kos_motor\"\nputs \"actualizador nuevo\"\n"))
+    updater = kos.join("tools/kos_update.rb").to_s
+
+    sout, sst = run("ruby", updater, "--desde", nueva.to_s, "--simular")
+    check(sst.success? && sout.include?("9.9.9"), "--simular falló:\n#{sout}")
+    check(g.("status", "--porcelain")[0].strip.empty?, "--simular cambió archivos")
+
+    kos.join("suelto.md").write("x\n")
+    _, dst = run("ruby", updater, "--desde", nueva.to_s)
+    check(!dst.success?, "actualizó con cambios sin guardar")
+    kos.join("suelto.md").delete
+
+    out, st = run("ruby", updater, "--desde", nueva.to_s)
+    check(st.success?, "la actualización falló:\n#{out}")
+    check(out.include?("actualizador nuevo"), "no delegó en el actualizador de la versión nueva")
+    check(kos.join("ONBOARDING/README.md").read.include?("versión 9.9.9 para Persona Prueba"), "no actualizó ni completó ONBOARDING")
+    check(kos.join("AGENTS.md").read.include?("Mi regla propia."), "pisó un archivo editado por el dueño")
+    check(kos.join("AGENTS.md.kos-new").read.include?("Regla nueva."), "no dejó la versión nueva en .kos-new")
+    check(kos.join("docs/manual/extra.md").exist?, "no agregó un archivo de motor nuevo")
+    check(!kos.join("tools/migraciones/README.md").exist?, "no quitó un archivo de motor viejo:\n#{out}")
+    check(kos.join("knowledge/migrado.txt").exist?, "no corrió la migración")
+    check(kos.join("kos.yaml").read.include?("schema_version: 2"), "no subió schema_version")
+    check(movies.read.include?("Película mía"), "tocó los datos del dueño")
+    check(kos.join(".kos/lock.yaml").read.include?("9.9.9"), "el lock no registró la versión nueva")
+    vout, _ = validate(kos)
+    check(vout.include?("update-conflict"), "el validador no avisó del .kos-new")
+
+    kos.join("AGENTS.md.kos-new").delete
+    g.("add", "-A"); g.("commit", "-qm", "actualizado")
+    out2, st2 = run("ruby", updater, "--desde", nueva.to_s)
+    check(st2.success? && !kos.join("AGENTS.md.kos-new").exist?, "repitió el conflicto de un archivo que no cambió:\n#{out2}")
+  end
+end
+
+# 13. Respaldo y restauración.
 with_copy("backup") do |copy|
   out, st = run("ruby", copy.join("tools/kos_backup.rb").to_s, copy.to_s)
   bundle = out[/Respaldo: (\S+)/, 1]

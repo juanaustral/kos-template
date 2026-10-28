@@ -1,5 +1,11 @@
 # Cambios
 
+## 1.3.0 — 2026-10-28
+- Nuevo: `ruby tools/kos_update.rb --desde <zip o carpeta>` actualiza KOS a una versión nueva. Reemplaza solo el motor (reglas, herramientas, manual, moldes, módulos, adaptadores), nunca tus datos. Con `--simular` muestra el plan sin tocar nada.
+- Si editaste un archivo del motor, se respeta: la versión nueva queda al lado como `.kos-new` y el validador avisa.
+- Migraciones de datos por `schema_version` (`tools/migraciones/`).
+- `.kos/lock.yaml` registra la versión instalada y la huella de cada archivo de motor. Archivo `VERSION`.
+
 ## 1.2.0 — 2026-10-28
 - Arreglo: un nombre o estilo con comillas o barras ya no rompe `kos.yaml` ni los manifiestos.
 - Arreglo: el asistente no toca ningún archivo hasta terminar las preguntas; un error o Ctrl-C no deja la instalación a medias.

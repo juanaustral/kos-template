@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0 — 2026-10-28
+- New: `ruby tools/kos_update.rb --from <zip or folder>` updates KOS to a new version. It replaces only the engine (rules, tools, manual, templates, modules, adapters), never your data. `--dry-run` shows the plan without touching anything.
+- Engine files you edited are respected: the new version is saved next to them as `.kos-new` and the validator warns.
+- Data migrations by `schema_version` (`tools/migraciones/`).
+- `.kos/lock.yaml` records the installed version and a fingerprint of each engine file. New `VERSION` file.
+
 ## 1.2.0 — 2026-10-28
 - Fix: a name or style with quotes or backslashes no longer breaks `kos.yaml` or the manifests.
 - Fix: the wizard changes no files until all questions are answered; an error or Ctrl-C leaves nothing half-done.

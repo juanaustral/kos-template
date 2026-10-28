@@ -12,6 +12,8 @@ Validator and wizard messages are in Spanish; the codes in brackets are the same
 | `ERROR [list-rows-dropped]` | Rows were deleted from a list. If by mistake: `git checkout -- knowledge/lists/<file>`. If on purpose: `KOS_ALLOW_ROW_DROP=1 git commit ...` and put `[allow-row-drop]` in the commit message (so GitHub won't fail either). |
 | A commit is stopped by validator errors | Since setup, the validator runs before every commit. Fix what it reports. Only in an emergency: `git commit --no-verify`. |
 | `placeholder-pendiente` appears after an update | Run `ruby tools/kos_init.rb --refill`. |
+| `AVISO [update-conflict]` | An update left a `.kos-new` file: compare it with the original, keep what you want and delete it. |
+| The updater says "predates 1.3.0" | Run the new version's updater with `--overwrite` (see [Maintenance](07-maintenance.md)). |
 | `ERROR [possible-secret-…]` | Something looks like a key. Remove it from the file and, if it reached Git, rotate that key in its service. |
 | `ERROR [placeholder-pendiente]` | A `{{…}}` was left unfilled. Replace it by hand. |
 | The AI doesn't follow the rules | Ask it to reread `AGENTS.md`. If it's a chat, check that the text from `adapters/paste-into-any-ai.md` is in the instructions. |

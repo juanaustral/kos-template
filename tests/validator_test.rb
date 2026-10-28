@@ -96,6 +96,10 @@ with_copy("init") do |copy|
   deny.write(["termino", "inexistente", $$.to_s].join("-") + "\n")
   _, pst2 = run("ruby", copy.join("tools/kos_privacy_check.rb").to_s, "--denylist", deny.to_s, copy.to_s)
   check(pst2.success?, "privacidad dio falso positivo")
+  copy.join("titular.md").write("Required Notice: Copyright Persona Prueba\nOtra vez Persona Prueba suelta\n")
+  deny.write("Persona Prueba\n!Required Notice: Copyright Persona Prueba\n")
+  aout, _ = run("ruby", copy.join("tools/kos_privacy_check.rb").to_s, "--denylist", deny.to_s, copy.to_s)
+  check(aout.include?("titular.md:2") && !aout.include?("titular.md:1"), "la frase permitida (!) no funcionó:\n#{aout}")
   deny.delete
 end
 

@@ -7,6 +7,7 @@ ARGV.map! { |a| a.dup.force_encoding(Encoding::UTF_8) }
 #
 # Uso: ruby tools/kos_privacy_check.rb --denylist <archivo> [--historial] [RAIZ]
 #   <archivo>: un término por línea (nombres, mails, rutas, clientes). Líneas con # se ignoran.
+#   Líneas que empiezan con "!": frase exacta permitida (ej.: el titular en la licencia); se quita antes de buscar.
 #   --historial: revisa también todo el historial de Git (git log -p --all).
 # Coincide palabras completas, sin distinguir mayúsculas ni tildes. Sale con 1 si encuentra algo.
 
@@ -25,13 +26,15 @@ deny_path = Pathname.new(opts[:denylist]).expand_path
 
 def fold(text) = text.unicode_normalize(:nfd).gsub(/\p{Mn}/, "").downcase
 
-terms = File.readlines(deny_path, encoding: "utf-8").map(&:strip).reject { |l| l.empty? || l.start_with?("#") }
+lines = File.readlines(deny_path, encoding: "utf-8").map(&:strip).reject { |l| l.empty? || l.start_with?("#") }
+allowed = lines.select { |l| l.start_with?("!") }.map { |l| fold(l[1..].strip) }.reject(&:empty?)
+terms = lines.reject { |l| l.start_with?("!") }
 patterns = terms.to_h { |t| [t, /(?<![[:alnum:]])#{Regexp.escape(fold(t))}(?![[:alnum:]])/] }
 hits = []
 
 check = lambda do |label, text|
   text.each_line.with_index(1) do |line, n|
-    folded = fold(line.scrub)
+    folded = allowed.reduce(fold(line.scrub)) { |acc, phrase| acc.gsub(phrase, " ") }
     patterns.each { |term, re| hits << "#{label}:#{n}: «#{term}»" if folded.match?(re) }
   end
 end

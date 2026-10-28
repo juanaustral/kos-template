@@ -1,5 +1,7 @@
 # Licencia de KOS
 
+Required Notice: Copyright (c) 2026 IONA y Juan Martinez Garcia
+
 KOS se distribuye bajo la **PolyForm Shield License 1.0.0**. El texto oficial, en inglés, está abajo y es el que vale; este resumen solo ayuda a entenderlo.
 
 **Puedes:**

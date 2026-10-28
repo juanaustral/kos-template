@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.2 — 2026-10-28
+- License now names its licensors (`Required Notice` line in `LICENSE.md`).
+- `kos_privacy_check.rb`: list lines starting with `!` are allowed exact phrases.
+
 ## 1.4.1 — 2026-10-28
 - License: PolyForm Shield 1.0.0. You may use KOS for anything (personal, work, clients) and change it; you may not sell it or offer it as your own product, even for free. `LICENSE.md` has a summary and the official text.
 - `kos_write.rb` can edit `.gitignore`; its test ignores `KOS_AGENTE` from the shell; `kos_doctor.rb` hides Git warnings about unreadable folders.

@@ -24,4 +24,6 @@ The AI rules already say so (`ONBOARDING/WRITING-RULES.md`): you don't have to a
 ## If the AIs run as different users (server)
 Put the folder in a shared group: `chgrp -R <group> kos && chmod -R g+w kos && find kos -type d -exec chmod g+s {} +` and `git -C kos config core.sharedRepository group`. `kos_doctor.rb` detects it and warns when a file loses group permission.
 
+So that critical things (rules, tools, history) don't change without your approval, see [Protection](13-protection.md).
+
 Next: [Glossary](glossary.md).

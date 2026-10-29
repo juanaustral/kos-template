@@ -24,4 +24,6 @@ When an idea from the inbox is confirmed, ask the AI to promote it: it moves it 
 ## Scope
 Everything has a scope: **global** (applies to everything), **area** (e.g. finance), **project** or **task**. What's decided in one project doesn't become a global rule without your approval. That's why each project's `manifest.yaml` says `cross_project: deny`: the AI doesn't mix projects.
 
+So that critical things (rules, tools, history) don't change without your approval, see [Protection](13-protection.md).
+
 Next: [Recipes](06-recipes.md).

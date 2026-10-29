@@ -47,6 +47,7 @@ Solo **Base** es fuente de verdad vigente. Entrada nunca manda.
 - **Tuyo, para siempre.** Markdown, YAML y CSV se leen con cualquier editor. Git guarda el historial y te deja deshacer.
 - **Sin servicio ni cuenta.** No es una app ni una suscripción: son archivos en tu carpeta y en tu repositorio privado.
 - **Las mismas skills para todas tus IAs.** Una sola copia en `skills/`, con casos de prueba y tu aprobación antes de cada cambio.
+- **Lo crítico no cambia sin tu aprobación.** Las reglas, las herramientas y el historial de Git solo se tocan con tu OK por email (código y PIN), y una herramienta te dice qué nivel de protección tienes de verdad.
 
 ### Requisitos previos
 
@@ -210,6 +211,7 @@ Only **Base** is the current source of truth. Inbox never overrides.
 - **Yours, long term.** Markdown, YAML and CSV open in any editor. Git keeps the history and lets you undo.
 - **No service, no account.** It is not an app or a subscription: it is files in your folder and your private repository.
 - **The same skills for all your AIs.** One copy in `skills/`, with test cases and your approval before every change.
+- **Critical things don't change without your approval.** The rules, the tools and Git history are only touched with your OK by email (code and PIN), and a tool tells you which protection level you really have.
 
 ### Prerequisites
 

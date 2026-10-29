@@ -12,6 +12,7 @@ KOS es la memoria durable de {{OWNER_NAME}}: archivos en Git. Las IA, apps e ín
 5. No guardes memoria propia sobre {{OWNER_NAME}} fuera de KOS. Lo que aprendas, proponlo (`Estado: proposed`) en `knowledge/inbox/`.
 6. No des algo por terminado con chequeos de sintaxis si lo pedido es comportamiento, visual o publicación: pruébalo.
 7. Tareas rutinarias: sigue `ONBOARDING/RECETAS.md` y no leas más.
+8. Zona crítica (`registry/zonas.yaml`): no la cambies por tu cuenta. Pide la aprobación de {{OWNER_NAME}} con `ruby tools/kos_aprobar.rb solicitar`; no uses `--no-verify` ni `git push --force`.
 
 ## Glosario (zonas)
 - **Entrada**: material nuevo sin ordenar (`knowledge/inbox/`). No es fuente de verdad.

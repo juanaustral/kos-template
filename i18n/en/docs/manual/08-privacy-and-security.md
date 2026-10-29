@@ -30,4 +30,6 @@ ruby tools/kos_privacy_check.rb --denylist ~/my-terms.txt --historial
 ## Private repository
 If you use GitHub, the repository must be **private**, with two-factor authentication on your account.
 
+So that critical things (rules, tools, history) don't change without your approval, see [Protection](13-protection.md).
+
 Next: [Customize](09-customize.md).

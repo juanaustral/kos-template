@@ -1,5 +1,8 @@
 # Cambios
 
+## 1.7.1 — 2026-10-29
+- Documentación al día con la protección de 1.7: README (beneficios), `tools/README.md` (herramientas nuevas), `registry/README.md` (zonas), regla 8 de `ONBOARDING/README.md` y enlaces a la guía de protección desde los capítulos de zonas, seguridad y varias IAs, en español e inglés.
+
 ## 1.7.0 — 2026-10-29
 - Nuevo: protección del KOS por niveles (guía y detección, aprobación por email, cerrado). Guía: `docs/manual/13-proteccion.md`.
 - Zonas: `registry/zonas.yaml` define lo crítico (reglas, herramientas, historial de Git, borrados masivos). `kos_write.rb` rechaza escribir ahí.

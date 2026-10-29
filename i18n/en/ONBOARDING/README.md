@@ -12,6 +12,7 @@ KOS is {{OWNER_NAME}}'s durable memory: files in Git. AIs, apps and indexes are 
 5. Do not keep your own memory about {{OWNER_NAME}} outside KOS. Propose what you learn (`Status: proposed`) in `knowledge/inbox/`.
 6. Do not call something done because of syntax checks if what was asked is behavior, visuals or publishing: test it.
 7. Routine tasks: follow `ONBOARDING/RECIPES.md` and read nothing else.
+8. Critical zone (`registry/zonas.yaml`): do not change it on your own. Ask for {{OWNER_NAME}}'s approval with `ruby tools/kos_aprobar.rb solicitar`; do not use `--no-verify` or `git push --force`.
 
 ## Glossary (zones)
 - **Inbox**: new unsorted material (`knowledge/inbox/`). Not a source of truth.

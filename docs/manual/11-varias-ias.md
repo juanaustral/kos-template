@@ -24,4 +24,6 @@ Las reglas para IAs ya lo indican (`ONBOARDING/REGLAS-ESCRITURA.md`): no tienes 
 ## Si las IAs corren con usuarios distintos (servidor)
 Pon la carpeta en un grupo común y hazla compartida: `chgrp -R <grupo> kos && chmod -R g+w kos && find kos -type d -exec chmod g+s {} +` y `git -C kos config core.sharedRepository group`. `kos_doctor.rb` lo detecta y avisa si un archivo queda sin permiso de grupo.
 
+Para que lo crítico (reglas, herramientas, historial) no cambie sin tu aprobación, mira [Protección](13-proteccion.md).
+
 Siguiente: [Glosario](glosario.md).

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.1 — 2026-10-29
+- Documentation up to date with 1.7 protection: README (benefits), `tools/README.md` (new tools), `registry/README.md` (zones), rule 8 of `ONBOARDING/README.md`, and links to the protection guide from the zones, security and several-AIs chapters, in Spanish and English.
+
 ## 1.7.0 — 2026-10-29
 - New: KOS protection in levels (guidance and detection, email approval, closed). Guide: `docs/manual/13-protection.md`.
 - Zones: `registry/zonas.yaml` defines what is critical (rules, tools, Git history, mass deletions). `kos_write.rb` refuses to write there.

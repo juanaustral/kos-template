@@ -19,13 +19,16 @@ One-page version: [`docs/manual/quickstart.md`](docs/manual/quickstart.md).
 | `projects/` | One folder per project: brief, manifest and tasks. |
 | `decisions/` | Current and past decisions. |
 | `knowledge/` | Your profile, areas, unsorted ideas (inbox) and lists. |
-| `registry/` | Master list of projects. |
+| `registry/` | Master list of projects and the critical zones (`zonas.yaml`). |
 | `templates/` | Starting points for new files. |
 | `adapters/` | How to connect each AI. |
 | `modules/` | Optional modules (lists, finance). |
 | `skills/` | Skills shared by all your AIs, approved by you ([manual](docs/manual/12-shared-skills.md)). |
-| `tools/`, `tests/` | Setup wizard, validator, backup and privacy check. |
+| `tools/`, `tests/` | Setup wizard, validator, backup, privacy check, and protection (email approval, protection level). |
 | `docs/manual/` | The manual, for you. |
+
+## Protection
+Ordinary things (tasks, ideas, lists) flow freely and are reversible. **Critical** things (the rules, the tools, Git history, mass deletions) only change with your approval: you get an email with the exact change and a code, and you confirm it with your PIN. Check your real level with `ruby tools/kos_proteccion.rb nivel` ([manual](docs/manual/13-protection.md)). On a personal computer the ceiling is level 2; a real lock needs a Linux server and the AI running as an unprivileged user.
 
 ## Manual
 Start with [`docs/manual/00-what-is-kos.md`](docs/manual/00-what-is-kos.md). Full index in [`docs/manual/README.md`](docs/manual/README.md).

@@ -24,4 +24,6 @@ Cuando una idea del inbox se confirma, pídele a la IA que la promueva: la pasa 
 ## Alcance
 Cada cosa tiene un alcance: **global** (vale para todo), **área** (por ejemplo, finanzas), **proyecto** o **tarea**. Lo que se decide en un proyecto no se vuelve regla global sin tu aprobación. Por eso cada proyecto tiene en su `manifest.yaml` `cross_project: deny`: la IA no mezcla proyectos.
 
+Para que lo crítico (reglas, herramientas, historial) no cambie sin tu aprobación, mira [Protección](13-proteccion.md).
+
 Siguiente: [Recetas](06-recetas.md).

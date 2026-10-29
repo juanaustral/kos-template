@@ -30,4 +30,6 @@ ruby tools/kos_privacy_check.rb --denylist ~/mis-terminos.txt --historial
 ## Repositorio privado
 Si usas GitHub, el repositorio debe ser **privado**, con verificación en dos pasos activada en tu cuenta.
 
+Para que lo crítico (reglas, herramientas, historial) no cambie sin tu aprobación, mira [Protección](13-proteccion.md).
+
 Siguiente: [Personalizar](09-personalizar.md).

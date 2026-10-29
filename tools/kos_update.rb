@@ -170,6 +170,14 @@ Dir.mktmpdir("kos-update-") do |tmp|
     config_path.write(config_path.read.sub(/^schema_version:\s*\d+/, "schema_version: #{want}"))
   end
 
+  # 4b. Zonas de protección (desde 1.7): si tu KOS aún no tiene registry/zonas.yaml, se crea desde el molde. Si ya existe, no se toca.
+  zonas_dst = ROOT.join("registry/zonas.yaml")
+  if !zonas_dst.exist? && fresh.join("templates/zonas.yaml").file?
+    FileUtils.mkdir_p(zonas_dst.dirname)
+    FileUtils.cp(fresh.join("templates/zonas.yaml"), zonas_dst)
+    puts t("  registry/zonas.yaml creado (zonas de protección) ✓", "  registry/zonas.yaml created (protection zones) ✓")
+  end
+
   # El lock guarda la versión nueva tal como vino: lo que dejaste como tuyo seguirá marcado como editado.
   KosMotor.write_lock(ROOT, new_files, to_v)
   ok = system("ruby", ROOT.join("tools/kos_validate.rb").to_s, ROOT.to_s)

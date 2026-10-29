@@ -16,4 +16,5 @@
 | 10 | [Troubleshooting](10-troubleshooting.md) | Quick fixes. |
 | 11 | [Several AIs at once](11-several-ais.md) | No overwrites: writing, syncing and checking. |
 | 12 | [Shared skills](12-shared-skills.md) | The same skills for all your AIs, with your approval. |
+| 13 | [Protection](13-protection.md) | What is critical, how you approve changes by email, and which protection level you reach. |
 | — | [Glossary](glossary.md) | KOS vocabulary. |

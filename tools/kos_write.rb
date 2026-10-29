@@ -35,8 +35,12 @@ require "time"
 require "tmpdir"
 require "rubygems/package"
 require "stringio"
+require "yaml"
 
 ROOT = Pathname.new(ENV["KOS_ROOT"] || File.join(__dir__, "..")).expand_path
+require_relative "lib/kos_como_servicio"
+KosComoServicio.relanzar(File.realpath(__FILE__), ROOT)
+MODO_ARCHIVO = KosComoServicio.modo_archivo(ROOT)
 LOCK_FILE = ROOT.join(".git/kos-write.lock")
 CLAIMS_FILE = ROOT.join(".git/kos-claims.json")
 TODAY = Date.today.iso8601
@@ -96,8 +100,8 @@ def slug(text)
 end
 
 def with_lock(timeout = 120)
-  File.open(LOCK_FILE, File::RDWR | File::CREAT, 0o664) do |f|
-    File.chmod(0o664, LOCK_FILE) rescue nil # con umask 022 quedaría cerrado para los otros usuarios del grupo
+  File.open(LOCK_FILE, File::RDWR | File::CREAT, MODO_ARCHIVO) do |f|
+    File.chmod(MODO_ARCHIVO, LOCK_FILE) rescue nil # con umask 022 quedaría cerrado para los otros usuarios del grupo
     deadline = Time.now + timeout
     until f.flock(File::LOCK_EX | File::LOCK_NB)
       raise KosError, "KOS ocupado más de #{timeout}s (candado #{LOCK_FILE})" if Time.now > deadline
@@ -147,9 +151,22 @@ def validation_errors(tree)
   end
 end
 
+# --- Zona crítica: estas rutas no se escriben por acá; se piden con tools/kos_aprobar.rb ---
+# La lista sale de registry/zonas.yaml tal como está en HEAD (editar el archivo en disco no la cambia).
+ZONA_CRITICA_RESPALDO = %w[AGENTS.md ONBOARDING/ tools/ registry/zonas.yaml .claude/ .github/ .gitignore].freeze
+def zona_critica?(rel)
+  zonas = YAML.safe_load(head_text("registry/zonas.yaml").to_s) rescue nil
+  rutas = Array(zonas.is_a?(Hash) ? zonas.dig("critica", "rutas") : nil)
+  rutas = ZONA_CRITICA_RESPALDO if rutas.empty?
+  rutas.any? { |z| rel == z || rel.start_with?(z.end_with?("/") ? z : "#{z}/") }
+end
+
 # --- Transacción: aplica cambios sobre HEAD (para el commit) y sobre el disco (para conservar lo ajeno) ---
 # changes: { "ruta" => ->(texto_o_nil) { nuevo_texto } }
 def transact(changes, agente, message)
+  changes.each_key do |rel|
+    raise KosError.new("#{rel} es zona crítica: no se escribe con kos_write. Requiere la aprobación del titular: tools/kos_aprobar.rb solicitar.", 4) if zona_critica?(rel)
+  end
   3.times do
     head, = git("rev-parse", "HEAD")
     head.strip!
@@ -186,7 +203,7 @@ def transact(changes, agente, message)
         FileUtils.mkdir_p(path.dirname)
         tmpfile = path.dirname.join(".#{path.basename}.kos-tmp-#{$$}")
         File.write(tmpfile, new_disk)
-        File.chmod(0o664, tmpfile)
+        File.chmod(MODO_ARCHIVO, tmpfile)
         File.rename(tmpfile, path)
         sync_index(rel, head, new_head)
       end
@@ -220,7 +237,7 @@ end
 
 def save_claims(data)
   File.write(CLAIMS_FILE, JSON.pretty_generate(data))
-  File.chmod(0o664, CLAIMS_FILE)
+  File.chmod(MODO_ARCHIVO, CLAIMS_FILE)
 end
 
 def warn_claim(proyecto, agente)

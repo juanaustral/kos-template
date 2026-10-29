@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.7.0 — 2026-10-29
+- New: KOS protection in levels (guidance and detection, email approval, closed). Guide: `docs/manual/13-protection.md`.
+- Zones: `registry/zonas.yaml` defines what is critical (rules, tools, Git history, mass deletions). `kos_write.rb` refuses to write there.
+- Email approval: `kos_aprobar.rb` sends the exact change and a one-time code; you confirm it with a PIN (`kos_pin.rb`) in a real terminal. The email is HTML with the change colored.
+- `pre-push` hook stops force pushes and branch deletion; the doctor flags rewritten history, mass deletions and critical changes without approval.
+- `kos_proteger.rb` closes a Linux server (`kos` service user, minimal sudo) and `kos_proteccion.rb` reports the real level and runs an attack test. Without a Linux server, or with the AI running as administrator, the ceiling is level 2 and the manual says so.
+- Tools aligned with the author's daily-use ones (`kos_write`, `kos_sync`, `kos_doctor`, `kos_skills`). Messages of the new tools are in Spanish only for now.
+- The AI instructions (`AGENTS.md`) explain the critical zone.
+
 ## 1.6.0 — 2026-10-28
 - Shared skills in two languages: in an English KOS, `kos_skills.rb` speaks English and uses English commands and file names (`propose`, `submit`, `approve`, `_proposals/`, `CHANGES.md`, `evals/cases.md`, `approvers`). Spanish commands and options keep working in either language.
 - README (GitHub) and installed README with the shared skills section, in Spanish and English. The instructions for an AI cover using skills and asking who approves them.

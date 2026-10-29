@@ -18,6 +18,8 @@ require "time"
 require "pathname"
 
 ROOT = Pathname.new(ENV["KOS_ROOT"] || File.join(__dir__, "..")).expand_path
+require_relative "lib/kos_como_servicio"
+MODO_ARCHIVO = KosComoServicio.modo_archivo(ROOT)
 LOCK_FILE = ROOT.join(".git/kos-write.lock")
 STATUS_FILE = ROOT.join(".git/kos-sync.json")
 simular = ARGV.include?("--simular")
@@ -29,13 +31,13 @@ end
 
 def finish(ok, mensaje, extra = {})
   File.write(STATUS_FILE, JSON.pretty_generate({ "fecha" => Time.now.iso8601, "ok" => ok, "mensaje" => mensaje }.merge(extra)))
-  File.chmod(0o664, STATUS_FILE) rescue nil
+  File.chmod(MODO_ARCHIVO, STATUS_FILE) rescue nil
   puts "#{Time.now.strftime("%F %T")} #{ok ? "OK" : "ERROR"} #{mensaje}"
   exit(ok ? 0 : 1)
 end
 
-File.open(LOCK_FILE, File::RDWR | File::CREAT, 0o664) do |lock|
-  File.chmod(0o664, LOCK_FILE) rescue nil
+File.open(LOCK_FILE, File::RDWR | File::CREAT, MODO_ARCHIVO) do |lock|
+  File.chmod(MODO_ARCHIVO, LOCK_FILE) rescue nil
   deadline = Time.now + 60
   until lock.flock(File::LOCK_EX | File::LOCK_NB)
     finish(false, "KOS ocupado más de 60 s; se reintenta en la próxima vuelta") if Time.now > deadline

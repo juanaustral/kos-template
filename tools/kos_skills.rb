@@ -221,6 +221,10 @@ end
 if $PROGRAM_NAME == __FILE__
   $stdout.sync = true # el informe sale antes que el error (que va a stderr)
   ROOT = Pathname.new(ENV["KOS_ROOT"] || File.join(__dir__, "..")).expand_path
+  # los comandos que escriben en KOS se relanzan como el usuario `kos`; enlazar, estado y validar quedan con quien llama
+  # (enlazar escribe en la carpeta personal de quien llama). `importar` necesita que `kos` pueda leer la carpeta de origen.
+  require_relative "lib/kos_como_servicio"
+  KosComoServicio.relanzar(File.realpath(__FILE__), ROOT) if %w[proponer propose importar import entregar submit aprobar approve rechazar reject].include?(ARGV.first)
   KosSkills.idioma!(ROOT)
   N = KosSkills.n
   SKILLS = ROOT.join("skills")

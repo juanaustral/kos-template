@@ -1,5 +1,14 @@
 # Cambios
 
+## 1.7.0 — 2026-10-29
+- Nuevo: protección del KOS por niveles (guía y detección, aprobación por email, cerrado). Guía: `docs/manual/13-proteccion.md`.
+- Zonas: `registry/zonas.yaml` define lo crítico (reglas, herramientas, historial de Git, borrados masivos). `kos_write.rb` rechaza escribir ahí.
+- Aprobación por email: `kos_aprobar.rb` envía el cambio exacto y un código de un solo uso; se confirma con un PIN (`kos_pin.rb`) en una terminal real. El correo es HTML con el cambio coloreado.
+- Hook `pre-push` que frena el force push y borrar ramas; el doctor avisa de historia reescrita, borrados masivos y cambios críticos sin aprobación.
+- `kos_proteger.rb` cierra un servidor Linux (usuario de servicio `kos`, sudo mínimo) y `kos_proteccion.rb` informa el nivel real y prueba un ataque. Sin servidor Linux o con la IA como administrador, el máximo es el nivel 2 y el manual lo dice.
+- Herramientas alineadas con las de uso diario del autor (`kos_write`, `kos_sync`, `kos_doctor`, `kos_skills`). Los mensajes de las herramientas nuevas están solo en español.
+- El instructivo para IA (`AGENTS.md`) explica la zona crítica.
+
 ## 1.6.0 — 2026-10-28
 - Skills compartidas en dos idiomas: en un KOS en inglés, `kos_skills.rb` habla en inglés y usa comandos y archivos en inglés (`propose`, `submit`, `approve`, `_proposals/`, `CHANGES.md`, `evals/cases.md`, `approvers`). Los comandos y opciones en español siguen funcionando en cualquier idioma.
 - README (GitHub) y README instalado con la sección de skills compartidas, en español e inglés. Las instrucciones para una IA incluyen el uso de skills y la pregunta de quién las aprueba.

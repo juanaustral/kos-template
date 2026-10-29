@@ -16,4 +16,5 @@
 | 10 | [Problemas frecuentes](10-problemas-frecuentes.md) | Soluciones rápidas. |
 | 11 | [Varias IAs a la vez](11-varias-ias.md) | Que no se pisen: escritura, sincronización y chequeo. |
 | 12 | [Skills compartidas](12-skills-compartidas.md) | Las mismas skills para todas tus IAs, con tu aprobación. |
+| 13 | [Protección](13-proteccion.md) | Qué es crítico, cómo apruebas cambios por email y qué nivel de protección logras. |
 | — | [Glosario](glosario.md) | Las palabras de KOS. |

@@ -352,4 +352,5 @@ say "\n..."
 ok = system("ruby", ROOT.join("tools/kos_validate.rb").to_s, ROOT.to_s)
 
 say "\n#{ok ? t[:done] : t[:errors]} #{t[:next]}"
+say(lang == "en" ? "Protection (optional): ruby tools/kos_proteccion.rb nivel  —  see docs/manual/13-protection.md" : "Protección (opcional): ruby tools/kos_proteccion.rb nivel  —  ver docs/manual/13-proteccion.md")
 exit(ok ? 0 : 1)

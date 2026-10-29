@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+# encoding: utf-8
+# pre-push de KOS. Frena, para cualquier IA o persona que haga `git push` desde este servidor:
+#   - borrar una rama o etiqueta remota
+#   - reescribir historia (push que no avanza en línea recta, o sea --force)
+# Solo el titular puede saltearlo (`git push --no-verify`), con su aprobación explícita para el force.
+# Se activa con `git config core.hooksPath tools/hooks`.
+require "open3"
+CERO = "0" * 40
+bloqueos = []
+$stdin.each_line do |linea|
+  _lref, lsha, rref, rsha = linea.split
+  next if lsha.nil?
+  if lsha == CERO
+    bloqueos << "borrar #{rref} en el remoto"
+  elsif rsha != CERO
+    _, st = Open3.capture2e("git", "merge-base", "--is-ancestor", rsha, lsha)
+    bloqueos << "reescribir la historia de #{rref} (el remoto tiene commits que este push perdería; hacer fetch y rebase, nunca force)" unless st.success?
+  end
+end
+exit 0 if bloqueos.empty?
+warn "KOS pre-push: bloqueado."
+bloqueos.each { |b| warn "  - #{b}" }
+warn "Borrar ramas o reescribir historia es un cambio crítico: necesita la aprobación explícita del titular."
+exit 1

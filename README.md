@@ -105,6 +105,14 @@ Una skill es una receta que la IA sigue para una tarea (formato abierto `SKILL.m
 
 En un KOS en inglés, la herramienta usa comandos y archivos en inglés (`propose`, `approve`, `_proposals/`). Guía: [`docs/manual/12-skills-compartidas.md`](docs/manual/12-skills-compartidas.md).
 
+### Protección
+
+Tu KOS puede evitar que una IA (o un error) cambie lo importante sin que lo sepas. Lo común es libre; lo **crítico** (reglas, herramientas, historial de Git, borrados masivos) solo cambia con tu aprobación: te llega un email con el cambio exacto y un código, y lo confirmas con tu PIN.
+
+- **Tres niveles, dichos con honestidad.** 1 guía y detección; 2 + aprobación por email; 3 cerrado (servidor Linux, la IA con un usuario sin privilegios). En un equipo personal con la IA como tu usuario, el techo es el 2; una IA como administrador no queda frenada por nada de esto.
+- **Compruébalo.** `ruby tools/kos_proteccion.rb nivel` dice tu nivel y `ataque` intenta saltear las barreras.
+- Guía: [`docs/manual/13-proteccion.md`](docs/manual/13-proteccion.md).
+
 ### Instrucciones para una IA
 
 > Esta sección es para que la IA la lea. Si eres una persona, puedes copiar el bloque y pegarlo como primer mensaje.
@@ -261,6 +269,14 @@ A skill is a recipe an AI follows for a task (open `SKILL.md` format from agents
 - **Several people.** If you share the KOS, all of you can be `approvers`.
 
 In a Spanish KOS the tool uses Spanish commands and file names (`proponer`, `aprobar`, `_propuestas/`); English commands always work too. Guide: `docs/manual/12-shared-skills.md` (installed with `--lang en`).
+
+### Protection
+
+Your KOS can keep an AI (or a mistake) from changing what matters without you knowing. Ordinary things are free; **critical** things (rules, tools, Git history, mass deletions) only change with your approval: you get an email with the exact change and a code, and you confirm it with your PIN.
+
+- **Three levels, stated honestly.** 1 guidance and detection; 2 + email approval; 3 closed (Linux server, the AI as an unprivileged user). On a personal computer with the AI running as your user the ceiling is 2; an AI running as administrator is not stopped by any of this.
+- **Check it.** `ruby tools/kos_proteccion.rb nivel` tells you your level and `ataque` tries to bypass the barriers.
+- Guide: `docs/manual/13-protection.md` (installed with the English KOS).
 
 ### Instructions for an AI
 

@@ -1,0 +1,21 @@
+# Zonas de tu KOS. Lo crítico es lo único que pide la aprobación explícita del titular (por email, con código y PIN).
+# Todo lo que no figura acá es zona operativa: libre y reversible, siempre por tools/kos_write.rb.
+# Cambiar este archivo es en sí mismo un cambio crítico. Ver docs/manual/13-proteccion.md.
+version: 1
+critica:
+  rutas:                      # prefijos de ruta relativos a la raíz de KOS
+    - AGENTS.md
+    - ONBOARDING/
+    - tools/
+    - registry/zonas.yaml
+    - .claude/
+    - .github/
+    - .gitignore
+  borrados:
+    max_archivos_por_commit: 5   # más que esto en un solo commit es borrado masivo
+    carpetas_de_proyecto: true   # borrar projects/<id>/ entero
+  historial: reescribir          # force push, borrar ramas, reset de commits ya subidos
+operativa_con_aviso:
+  rutas:
+    - decisions/             # decisiones nuevas: libres; cambiar una aprobada: crítico
+    - skills/                # las aprobadas no se editan

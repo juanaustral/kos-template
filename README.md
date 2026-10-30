@@ -53,6 +53,8 @@ Solo **Base** es fuente de verdad vigente. Entrada nunca manda.
 
 KOS es **gratis**. Descarga la última versión (un ZIP) desde [Releases](https://github.com/juanaustral/kos-template/releases/latest), o usa **Use this template** en GitHub. Sin cuenta, sin suscripción, sin servicio. Licencia PolyForm Shield 1.0.0: úsalo y modifícalo para lo que quieras; no puedes venderlo ni ofrecerlo como producto propio.
 
+**¿Dudas o errores?** Abre un [Issue](https://github.com/juanaustral/kos-template/issues). No pegues datos personales, contraseñas ni tokens: es público.
+
 ### Requisitos previos
 
 Antes de instalar, ten a mano:
@@ -220,6 +222,8 @@ Only **Base** is the current source of truth. Inbox never overrides.
 ### Download (free)
 
 KOS is **free**. Download the latest version (a ZIP) from [Releases](https://github.com/juanaustral/kos-template/releases/latest), or use **Use this template** on GitHub. No account, no subscription, no service. PolyForm Shield 1.0.0 license: use and change it for anything; you may not sell it or offer it as your own product.
+
+**Questions or bugs?** Open an [Issue](https://github.com/juanaustral/kos-template/issues). Don't paste personal data, passwords or tokens: it is public.
 
 ### Prerequisites
 

@@ -49,6 +49,10 @@ Solo **Base** es fuente de verdad vigente. Entrada nunca manda.
 - **Las mismas skills para todas tus IAs.** Una sola copia en `skills/`, con casos de prueba y tu aprobación antes de cada cambio.
 - **Lo crítico no cambia sin tu aprobación.** Las reglas, las herramientas y el historial de Git solo se tocan con tu OK por email (código y PIN), y una herramienta te dice qué nivel de protección tienes de verdad.
 
+### Descargar (gratis)
+
+KOS es **gratis**. Descarga la última versión (un ZIP) desde [Releases](https://github.com/juanaustral/kos-template/releases/latest), o usa **Use this template** en GitHub. Sin cuenta, sin suscripción, sin servicio. Licencia PolyForm Shield 1.0.0: úsalo y modifícalo para lo que quieras; no puedes venderlo ni ofrecerlo como producto propio.
+
 ### Requisitos previos
 
 Antes de instalar, ten a mano:
@@ -212,6 +216,10 @@ Only **Base** is the current source of truth. Inbox never overrides.
 - **No service, no account.** It is not an app or a subscription: it is files in your folder and your private repository.
 - **The same skills for all your AIs.** One copy in `skills/`, with test cases and your approval before every change.
 - **Critical things don't change without your approval.** The rules, the tools and Git history are only touched with your OK by email (code and PIN), and a tool tells you which protection level you really have.
+
+### Download (free)
+
+KOS is **free**. Download the latest version (a ZIP) from [Releases](https://github.com/juanaustral/kos-template/releases/latest), or use **Use this template** on GitHub. No account, no subscription, no service. PolyForm Shield 1.0.0 license: use and change it for anything; you may not sell it or offer it as your own product.
 
 ### Prerequisites
 

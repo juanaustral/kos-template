@@ -15,7 +15,20 @@ Solo usan archivos locales: no llaman a ninguna IA ni servicio externo. Requiere
 | `kos_proteccion.rb` | Tu nivel de protección y una prueba de ataque | `ruby tools/kos_proteccion.rb nivel [--exigir 2]`, `ataque` |
 | `kos_proteger.rb` | Cierra un servidor Linux (usuario `kos`, sudo mínimo); con vuelta atrás | `ruby tools/kos_proteger.rb --agentes ana,bot [--cerrar]`, `--abrir` |
 | `kos_validate.rb` | Revisa estructura, estados, enlaces, secretos y datos | `ruby tools/kos_validate.rb` |
+| `kos_contar.rb` | Cuenta proyectos por estado (active, paused, archived) | `ruby tools/kos_contar.rb [RAIZ]` |
 | `kos_backup.rb` | Respaldo comprimido con verificación | `ruby tools/kos_backup.rb` y `--verify <archivo>` |
 | `kos_privacy_check.rb` | Busca nombres o datos antes de compartir | `ruby tools/kos_privacy_check.rb --denylist mis-terminos.txt --historial` |
 
-Pruebas: `ruby tests/validator_test.rb` (más `kos_write_test`, `kos_skills_test`, `hooks_test`, `aprobar_test`, `zona_critica_test`, `proteccion_test`). Guía de protección: `docs/manual/13-proteccion.md`.
+Pruebas: `ruby tests/validator_test.rb` (más `kos_write_test`, `kos_skills_test`, `hooks_test`, `aprobar_test`, `zona_critica_test`, `proteccion_test`, `kos_contar_test`). Guía de protección: `docs/manual/13-proteccion.md`.
+
+## kos_contar.rb
+
+Cuenta los proyectos de `registry/projects.yaml` por estado. Salida de ejemplo:
+
+```
+active: 1
+paused: 0
+archived: 0
+```
+
+`finished: N` aparece solo si hay algún proyecto finalizado.
